@@ -31,8 +31,7 @@ public class MainActivity extends AppCompatActivity {
     //example URL https://api.themoviedb.org/3/movie/popular?api_key=ccac7cd7a937bc204875001c4924f88a
     private static final String BASE_URL = "https://api.themoviedb.org";
     private static final String BASE_PATH = "3/movie";
-    private static final String BASE_QUERY = "popular?";
-    private static final String API_KEY = "api_key=PUT_API_KEY_HERE";
+    private static final String BASE_QUERY = "popular?api_key=ccac7cd7a937bc204875001c4924f88a";
 
 
     @Override
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager); // set LayoutManager to RecyclerView
         //  call the constructor of ImageAdapter to send the reference and data to Adapter
-        mAdapter = new ImageAdapter(MainActivity.this, new ArrayList<MovieItem>());
+        mAdapter = new ImageAdapter(this, new ArrayList<MovieItem>(), this);
         recyclerView.setAdapter(mAdapter);
 
         //check connectivity
@@ -70,13 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
     //a filter-dependent method returning the appropriate URL based on Spinner
 
+    
     //method to build URL
     //TODO: build in sort order option
     public static URL buildUrl() {
         Uri sortOrderUri = Uri.parse(BASE_URL).buildUpon()
                 .appendEncodedPath(BASE_PATH)
                 .appendEncodedPath(BASE_QUERY)
-                .appendEncodedPath(API_KEY)
                 .build();
         try {
             URL sortOrderURL = new URL(sortOrderUri.toString());

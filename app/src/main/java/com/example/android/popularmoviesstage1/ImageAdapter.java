@@ -22,31 +22,24 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
 
+    private final ImageAdapterClickHandler mClickHandler;
     private Context mContext;
     private ArrayList<MovieItem> mMovieItems;
 
-    public ImageAdapter(Context c, ArrayList<MovieItem> movieItems) {
-        this.mContext = c;
-        this.mMovieItems = movieItems;
+    public ImageAdapter(Context c, ArrayList<MovieItem> movieItems, ImageAdapterClickHandler
+            imageAdapterClickHandler) {
+        mContext = c;
+        mMovieItems = movieItems;
+        mClickHandler = imageAdapterClickHandler;
     }
-    //TODO: set just image to the constructor, using Picasso?
-    //TODO: notify changes
 
-    //define the ViewHolder
-    class MyViewHolder extends RecyclerView.ViewHolder {
-        // link the item(elements in rowlayout.xml) to the ViewHolder
-        ImageView image;
-
-        public MyViewHolder(View itemView) {
-            super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.image);
-        }
-    }
+    //create constructor that takes both an array of movie items and the ImageAdapterClickHandler
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // inflate the item Layout
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rowlayout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rowlayout, parent,
+                false);
         //pass the view to the ViewHolder
         MyViewHolder viewHolder = new MyViewHolder(view);
         return viewHolder;
@@ -58,24 +51,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         final MovieItem currentMovieItem = mMovieItems.get(position);
         // bind data to the holder (and therefore items)
         Picasso.with(mContext).load(currentMovieItem.getmImageUrl()).into(holder.image);
-
-        //TODO: Sort this out
-
-        // implement setOnClickListener event on item view.
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // open the detail activity on item click
-                Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtra("position", position); // put position in Intent
-                mContext.startActivity(intent);
-            }
-        });
     }
 
-   @Override
+    @Override
     public int getItemCount() {
-        if(mMovieItems != null) {
+        if (mMovieItems != null) {
             return mMovieItems.size();
         } else {
             return 0;
@@ -88,4 +68,29 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         notifyDataSetChanged();
     }
 
+    //create interface for clickHandler
+    public interface ImageAdapterClickHandler {
+        void onClickMethod(MovieItem movieItem);
+    }
+
+    //define the ViewHolder that implements the click handler interface
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final ImageView image;
+
+        //create ViewHolder that links the image attribute of rowlayout.xml
+        //and set a click listener to it
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            image = itemView.findViewById(R.id.image);
+            itemView.setOnClickListener(this);
+        }
+
+        //define the onClick method to be assigned to the listener
+        @Override
+        public void onClick(View view) {
+            int adapterPosition = getAdapterPosition();
+            MovieItem movieItem = mMovieItems.get(adapterPosition);
+            mClickHandler.onClickMethod(movieItem);
+        }
+    }
 }
