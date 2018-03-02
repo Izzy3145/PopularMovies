@@ -12,12 +12,18 @@ import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
 
-    ImageView selectedImage;
-    TextView selectedTitle;
-    TextView selectedSynopsis;
-    TextView selectedRating;
-    TextView selectedDate;
+    private ImageView selectedImage;
+    private TextView selectedTitle;
+    private TextView selectedSynopsis;
+    private TextView selectedRating;
+    private TextView selectedDate;
     Context mContext;
+    private MovieItem mParcelledMovieItem;
+    private String mOriginalTitle;
+    private String mImageUrl;
+    private String mPlotSynopsis;
+    private int mUserRating;
+    private String mReleaseDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,14 +36,21 @@ public class DetailActivity extends AppCompatActivity {
         selectedRating = (TextView) findViewById(R.id.selectedRating);
         selectedDate = (TextView) findViewById(R.id.selectedDate);
 
+        //get MovieItem from intent
         Intent intent = getIntent();
-        // get image from Intent and set it in ImageView
-        //Picasso.with(mContext).load(intent.getIntExtra("image", 0))
-         //       .into(selectedImage);
-        selectedTitle.setText(intent.getIntExtra("title",0));
-        selectedSynopsis.setText(intent.getIntExtra("synopsis",0));
-        selectedRating.setText(intent.getIntExtra("rating",0));
-        selectedDate.setText(intent.getIntExtra("date",0));
+        mParcelledMovieItem = (MovieItem)intent.getParcelableExtra("parcelledMovieItem");
+        mOriginalTitle = mParcelledMovieItem.getmOriginalTitle();
+        mImageUrl = mParcelledMovieItem.getmImageUrl();
+        mPlotSynopsis = mParcelledMovieItem.getmPlotSynopsis();
+        mUserRating = mParcelledMovieItem.getmUserRating();
+        mReleaseDate = mParcelledMovieItem.getmReleaseDate();
+
+        Picasso.with(mContext).load(mImageUrl)
+                .into(selectedImage);
+        selectedTitle.setText(mOriginalTitle);
+        selectedSynopsis.setText(mPlotSynopsis);
+        selectedRating.setText(Integer.toString(mUserRating));
+        selectedDate.setText(mReleaseDate);
     }
 
     //to include and set data to original title, movie poster, a plot synopsis(overview),

@@ -1,12 +1,16 @@
 package com.example.android.popularmoviesstage1;
 
+import android.graphics.Movie;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.net.URL;
 
 /**
  * Created by izzystannett on 25/02/2018.
  */
 
-public class MovieItem {
+public class MovieItem implements Parcelable{
     //should implement Parcelable interface? see BookListing
 
     //to include and set data to original title, movie poster, a plot synopsis(overview),
@@ -49,5 +53,40 @@ public class MovieItem {
 
     public String getmReleaseDate() {
         return mReleaseDate;
+    }
+
+    //override Parcelable methods
+    protected MovieItem(Parcel in){
+        mOriginalTitle = in.readString();
+        mImageUrl = in.readString();
+        mPlotSynopsis = in.readString();
+        mUserRating = in.readInt();
+        mReleaseDate = in.readString();
+    }
+
+    public static final Creator CREATOR = new Creator() {
+        @Override
+        public MovieItem createFromParcel(Parcel parcel) {
+            return new MovieItem(parcel);
+        }
+
+        @Override
+        public MovieItem[] newArray(int i) {
+            return new MovieItem[i];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mOriginalTitle);
+        parcel.writeString(mImageUrl);
+        parcel.writeString(mPlotSynopsis);
+        parcel.writeInt(mUserRating);
+        parcel.writeString(mReleaseDate);
     }
 }

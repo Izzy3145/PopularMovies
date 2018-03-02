@@ -1,6 +1,7 @@
 package com.example.android.popularmoviesstage1;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -20,9 +21,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import com.example.android.popularmoviesstage1.ImageAdapter.ImageAdapterClickHandler;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ImageAdapterClickHandler {
 
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -69,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
 
     //a filter-dependent method returning the appropriate URL based on Spinner
 
+
+    @Override
+    public void onClickMethod(MovieItem movieItem) {
+        Intent startDetailActivity = new Intent(this, DetailActivity.class);
+        startDetailActivity.putExtra("parcelledMovieItem", movieItem);
+        startActivity(startDetailActivity);
+        }
 
     //method to build URL
     //TODO: build in sort order option
