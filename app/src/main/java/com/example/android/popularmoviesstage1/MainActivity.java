@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     //a filter-dependent method returning the appropriate URL based on Spinner
 
-    
+
     //method to build URL
     //TODO: build in sort order option
     public static URL buildUrl() {
