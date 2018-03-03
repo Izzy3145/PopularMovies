@@ -2,8 +2,11 @@ package com.example.android.popularmoviesstage1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,6 +33,12 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        //set up ActionBar for Up button
+        ActionBar actionBar = this.getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         selectedImage = (ImageView) findViewById(R.id.selectedImage);
         selectedTitle = (TextView) findViewById(R.id.selectedTitle);
         selectedSynopsis = (TextView) findViewById(R.id.selectedSynopsis);
@@ -38,7 +47,7 @@ public class DetailActivity extends AppCompatActivity {
 
         //get MovieItem from intent
         Intent intent = getIntent();
-        mParcelledMovieItem = (MovieItem)intent.getParcelableExtra("parcelledMovieItem");
+        mParcelledMovieItem = intent.getParcelableExtra("parcelledMovieItem");
         mOriginalTitle = mParcelledMovieItem.getmOriginalTitle();
         mImageUrl = mParcelledMovieItem.getmImageUrl();
         mPlotSynopsis = mParcelledMovieItem.getmPlotSynopsis();
@@ -53,7 +62,15 @@ public class DetailActivity extends AppCompatActivity {
         selectedDate.setText(mReleaseDate);
     }
 
-    //to include and set data to original title, movie poster, a plot synopsis(overview),
-    // user rating (vote_average), release date
-    //TODO: find position and match up the rest of the MovieItem
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == android.R.id.home){
+            NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

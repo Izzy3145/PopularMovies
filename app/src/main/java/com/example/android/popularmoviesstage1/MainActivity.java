@@ -12,6 +12,9 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -71,7 +74,26 @@ public class MainActivity extends AppCompatActivity implements ImageAdapterClick
 
     //a filter-dependent method returning the appropriate URL based on Spinner
 
+    //set up Settings option
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.movies_menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings){
+            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(startSettingsActivity);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //override the RecyclerView's onClickMethod, and define intent to open Detail Activity
     @Override
     public void onClickMethod(MovieItem movieItem) {
         Intent startDetailActivity = new Intent(this, DetailActivity.class);
