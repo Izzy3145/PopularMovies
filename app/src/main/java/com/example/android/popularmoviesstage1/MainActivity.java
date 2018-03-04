@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity
 
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-    private ImageAdapter mAdapter;
-    private boolean SORT_BY;
+    private static ImageAdapter mAdapter;
+    private static String SORT_BY;
 
     //example URL https://api.themoviedb.org/3/movie/popular?api_key=ccac7cd7a937bc204875001c4924f88a
     private static final String BASE_URL = "https://api.themoviedb.org";
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
         if (networkInfo != null && networkInfo.isConnected()) {
             //call the Async method to make connection to given API in background
             MovieAsyncTask task = new MovieAsyncTask();
-            task.execute(buildUrl(SORT_BY));
+            task.execute(buildUrl());
         } else {
             //otherwise set the EmptyView to display an appropriate message
             //TODO: polish
@@ -109,17 +109,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     //set up SharedPreferences and it's listener
+
     private void setupSharedPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SORT_BY = sharedPreferences.getBoolean("sort_by_popularity", true);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        SORT_BY = sharedPreferences.getString(getString(R.string.sort_by_key),
+                getString(R.string.pref_pop_value));
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        if (s.equals("sort_by_popularity")) {
-            SORT_BY = sharedPreferences.getBoolean("sort_by_popularity",true);
+        if (s.equals(getString(R.string.sort_by_key))) {
+            SORT_BY = sharedPreferences.getString(getString(R.string.sort_by_key),
+                    getString(R.string.pref_pop_value));
+            MovieAsyncTask task = new MovieAsyncTask();
+            task.execute(buildUrl());
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this)
+        .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -130,17 +141,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     //method to build URL depending on preference
-    public static URL buildUrl(boolean sortBy) {
-        String BASE_QUERY_POPULAR = "popular?api_key=ccac7cd7a937bc204875001c4924f88a";
-        String BASE_QUERY_TOP_RATED = "top_rated?api_key=ccac7cd7a937bc204875001c4924f88a";
+    public URL buildUrl() {
         String BASE_QUERY;
-
-        if (sortBy) {
-            BASE_QUERY = BASE_QUERY_POPULAR;
+        if (SORT_BY.equals(getString(R.string.pref_pop_value))) {
+            BASE_QUERY = getString(R.string.api_popular);
         } else {
-            BASE_QUERY = BASE_QUERY_TOP_RATED;
+            BASE_QUERY = getString(R.string.api_top_rated);
         }
-
         Uri sortOrderUri = Uri.parse(BASE_URL).buildUpon()
                 .appendEncodedPath(BASE_PATH)
                 .appendEncodedPath(BASE_QUERY)
@@ -155,7 +162,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public class MovieAsyncTask extends AsyncTask<URL, Void, ArrayList<MovieItem>> {
+    public static class MovieAsyncTask extends AsyncTask<URL, Void, ArrayList<MovieItem>> {
         //TODO: polish, override onPreExecute
 
         //build Url and return a List of movies
@@ -179,7 +186,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(ArrayList<MovieItem> queriedMovieItems) {
             super.onPostExecute(queriedMovieItems);
-
+            //TODO: hide ProgressBar
             //TODO: polish, if no results, set EmptyTextView
             mAdapter.setMovieData(queriedMovieItems);
         }

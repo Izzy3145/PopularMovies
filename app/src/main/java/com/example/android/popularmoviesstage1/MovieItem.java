@@ -11,10 +11,6 @@ import java.net.URL;
  */
 
 public class MovieItem implements Parcelable{
-    //should implement Parcelable interface? see BookListing
-
-    //to include and set data to original title, movie poster, a plot synopsis(overview),
-    // user rating (vote_average), release date
 
     private String mOriginalTitle;
     private String mImageUrl;
@@ -39,8 +35,7 @@ public class MovieItem implements Parcelable{
     }
 
     public String getmImageUrl() {
-        String fullImageUrl = BASE_IMAGE_URL + IMAGE_SIZE_URL + mImageUrl;
-        return fullImageUrl;
+        return BASE_IMAGE_URL + IMAGE_SIZE_URL + mImageUrl;
     }
 
     public String getmPlotSynopsis() {

@@ -8,4 +8,11 @@
         android:summaryOn="Top Rated"
         android:title="Sort By"/>
 
+    <ListPreference
+        android:defaultValue="@string/pref_pop_value"
+        android:key="@string/sort_by_key"
+        android:title="@string/sort_by_label"
+        android:entries="@array/pref_sort_by_labels"
+        android:entryValues="@array/pref_sort_by_values" />
+
 </PreferenceScreen>

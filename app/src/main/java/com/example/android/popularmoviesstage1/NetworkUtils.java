@@ -89,11 +89,9 @@ public class NetworkUtils {
         return output.toString();
     }
 
-    //JSON parsing method including Picasso for images
+    //JSON parsing method for extracting a MovieItem
     public static ArrayList<MovieItem> extractFeatureFromJson(String jsonResponse) {
-
         ArrayList<MovieItem> movieItems = new ArrayList<>();
-
         //if the jsonString is empty, return early
         if (TextUtils.isEmpty(jsonResponse)) {
             return null;
@@ -154,5 +152,4 @@ public class NetworkUtils {
         }
         return null;
     }
-
 }

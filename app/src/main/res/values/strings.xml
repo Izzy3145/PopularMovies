@@ -2,4 +2,18 @@
     <string name="app_name">Movies</string>
     <string name="action_settings">Settings</string>
     <string name="action_detail">More Info</string>
+
+    <string name="api_popular">popular?api_key=ccac7cd7a937bc204875001c4924f88a</string>
+    <string name="api_top_rated">top_rated?api_key=ccac7cd7a937bc204875001c4924f88a</string>
+
+    <!-- shared preferences labels -->
+    <string name="sort_by_label">Sort By</string>
+    <string name="pref_pop_label">Most Popular</string>
+    <string name="pref_top_label">Top Rated</string>
+
+    <!-- shared preferences values -->
+    <string name="sort_by_key">sort_by</string>
+    <string name="pref_pop_value">popular</string>
+    <string name="pref_top_value">toprated</string>
+
 </resources>

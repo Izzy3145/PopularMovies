@@ -15,18 +15,12 @@ import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
 
+    Context mContext;
     private ImageView selectedImage;
     private TextView selectedTitle;
     private TextView selectedSynopsis;
     private TextView selectedRating;
     private TextView selectedDate;
-    Context mContext;
-    private MovieItem mParcelledMovieItem;
-    private String mOriginalTitle;
-    private String mImageUrl;
-    private String mPlotSynopsis;
-    private int mUserRating;
-    private String mReleaseDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,42 +29,38 @@ public class DetailActivity extends AppCompatActivity {
 
         //set up ActionBar for Up button
         ActionBar actionBar = this.getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        selectedImage = (ImageView) findViewById(R.id.selectedImage);
-        selectedTitle = (TextView) findViewById(R.id.selectedTitle);
-        selectedSynopsis = (TextView) findViewById(R.id.selectedSynopsis);
-        selectedRating = (TextView) findViewById(R.id.selectedRating);
-        selectedDate = (TextView) findViewById(R.id.selectedDate);
+        //find views in activity_detail.xml
+        selectedImage = findViewById(R.id.selectedImage);
+        selectedTitle = findViewById(R.id.selectedTitle);
+        selectedSynopsis = findViewById(R.id.selectedSynopsis);
+        selectedRating = findViewById(R.id.selectedRating);
+        selectedDate = findViewById(R.id.selectedDate);
 
-        //get MovieItem from intent
+        //get MovieItem from intent and set to views
         Intent intent = getIntent();
-        mParcelledMovieItem = intent.getParcelableExtra("parcelledMovieItem");
-        mOriginalTitle = mParcelledMovieItem.getmOriginalTitle();
-        mImageUrl = mParcelledMovieItem.getmImageUrl();
-        mPlotSynopsis = mParcelledMovieItem.getmPlotSynopsis();
-        mUserRating = mParcelledMovieItem.getmUserRating();
-        mReleaseDate = mParcelledMovieItem.getmReleaseDate();
-
-        Picasso.with(mContext).load(mImageUrl)
-                .into(selectedImage);
-        selectedTitle.setText(mOriginalTitle);
-        selectedSynopsis.setText(mPlotSynopsis);
-        selectedRating.setText(Integer.toString(mUserRating));
-        selectedDate.setText(mReleaseDate);
+        MovieItem parcelledMovieItem = intent.getParcelableExtra("parcelledMovieItem");
+        setItemToViews(parcelledMovieItem);
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == android.R.id.home){
+        if (id == android.R.id.home) {
             NavUtils.navigateUpFromSameTask(this);
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void setItemToViews(MovieItem movieItem) {
+        Picasso.with(mContext).load(movieItem.getmImageUrl())
+                .into(selectedImage);
+        selectedTitle.setText(movieItem.getmOriginalTitle());
+        selectedSynopsis.setText(movieItem.getmPlotSynopsis());
+        selectedRating.setText(Integer.toString(movieItem.getmUserRating()));
+        selectedDate.setText(movieItem.getmReleaseDate());
+    }
 }
