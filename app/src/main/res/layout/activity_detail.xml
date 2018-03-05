@@ -1,37 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#fff"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
 
-    <TextView
-        android:id="@+id/selectedTitle"
-        style="@style/title_style" />
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/selectedImage"
-        style="@style/detail_image_style"
-        android:layout_below="@+id/selectedTitle" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
 
-    <TextView
-        android:id="@+id/selectedDate"
-        style="@style/release_date_style"
-        android:layout_below="@id/selectedTitle"
-        android:layout_toEndOf="@+id/selectedImage" />
+        <TextView
+            android:id="@+id/selectedTitle"
+            style="@style/title_style" />
 
-    <TextView
-        android:id="@+id/selectedRating"
-        style="@style/rating_style"
-        android:layout_below="@id/selectedDate"
-        android:layout_toEndOf="@+id/selectedImage" />
+        <ImageView
+            android:id="@+id/selectedImage"
+            style="@style/detail_image_style"
+            android:layout_below="@+id/selectedTitle" />
 
-    <TextView
-        android:id="@+id/selectedSynopsis"
-        style="@style/synopsis_style"
-        android:layout_below="@id/selectedImage" />
+        <TextView
+            android:id="@+id/selectedDate"
+            style="@style/release_date_style"
+            android:layout_below="@id/selectedTitle"
+            android:layout_toEndOf="@+id/selectedImage" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/selectedRating"
+            style="@style/rating_style"
+            android:layout_below="@id/selectedDate"
+            android:layout_toEndOf="@+id/selectedImage" />
+
+        <TextView
+            android:id="@+id/selectedSynopsis"
+            style="@style/synopsis_style"
+            android:layout_below="@id/selectedImage" />
+
+    </RelativeLayout>
+
+</ScrollView>
