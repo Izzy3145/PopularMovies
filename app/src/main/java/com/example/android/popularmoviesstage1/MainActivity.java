@@ -132,8 +132,6 @@ public class MainActivity extends AppCompatActivity
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    //TODO: change this to a Loader for greater lifecycle handling
-    //TODO: cache Loader data
     public class MovieAsyncTask extends AsyncTask<URL, Void, ArrayList<MovieItem>> {
 
         @Override
