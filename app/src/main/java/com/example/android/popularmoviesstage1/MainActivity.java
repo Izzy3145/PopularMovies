@@ -132,6 +132,8 @@ public class MainActivity extends AppCompatActivity
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
+    //TODO: move to another activity
+
     public class MovieAsyncTask extends AsyncTask<URL, Void, ArrayList<MovieItem>> {
 
         @Override
