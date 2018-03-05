@@ -10,15 +10,26 @@ import java.net.URL;
  * Created by izzystannett on 25/02/2018.
  */
 
-public class MovieItem implements Parcelable{
+public class MovieItem implements Parcelable {
 
+    public static final Creator CREATOR = new Creator() {
+        @Override
+        public MovieItem createFromParcel(Parcel parcel) {
+            return new MovieItem(parcel);
+        }
+
+        @Override
+        public MovieItem[] newArray(int i) {
+            return new MovieItem[i];
+        }
+    };
+    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String IMAGE_SIZE_URL = "w185";
     private String mOriginalTitle;
     private String mImageUrl;
     private String mPlotSynopsis;
     private int mUserRating;
     private String mReleaseDate;
-    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
-    private static final String IMAGE_SIZE_URL = "w185";
 
     public MovieItem(String originalTitle, String imageUrl, String plotSynopsis,
                      int userRating, String releaseDate) {
@@ -27,6 +38,15 @@ public class MovieItem implements Parcelable{
         mPlotSynopsis = plotSynopsis;
         mUserRating = userRating;
         mReleaseDate = releaseDate;
+    }
+
+    //override Parcelable methods
+    protected MovieItem(Parcel in) {
+        mOriginalTitle = in.readString();
+        mImageUrl = in.readString();
+        mPlotSynopsis = in.readString();
+        mUserRating = in.readInt();
+        mReleaseDate = in.readString();
     }
 
     //set getter methods
@@ -49,27 +69,6 @@ public class MovieItem implements Parcelable{
     public String getmReleaseDate() {
         return mReleaseDate;
     }
-
-    //override Parcelable methods
-    protected MovieItem(Parcel in){
-        mOriginalTitle = in.readString();
-        mImageUrl = in.readString();
-        mPlotSynopsis = in.readString();
-        mUserRating = in.readInt();
-        mReleaseDate = in.readString();
-    }
-
-    public static final Creator CREATOR = new Creator() {
-        @Override
-        public MovieItem createFromParcel(Parcel parcel) {
-            return new MovieItem(parcel);
-        }
-
-        @Override
-        public MovieItem[] newArray(int i) {
-            return new MovieItem[i];
-        }
-    };
 
     @Override
     public int describeContents() {

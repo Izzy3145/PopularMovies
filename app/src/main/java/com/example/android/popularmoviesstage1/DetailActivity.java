@@ -60,7 +60,7 @@ public class DetailActivity extends AppCompatActivity {
                 .into(selectedImage);
         selectedTitle.setText(movieItem.getmOriginalTitle());
         selectedSynopsis.setText(movieItem.getmPlotSynopsis());
-        selectedRating.setText(Integer.toString(movieItem.getmUserRating()));
+        selectedRating.setText(Integer.toString(movieItem.getmUserRating()) + "/10");
         selectedDate.setText(movieItem.getmReleaseDate());
     }
 }

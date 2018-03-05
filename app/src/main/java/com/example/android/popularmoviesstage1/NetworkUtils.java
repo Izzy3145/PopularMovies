@@ -1,5 +1,6 @@
 package com.example.android.popularmoviesstage1;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
@@ -29,6 +30,28 @@ import java.util.List;
 public class NetworkUtils {
 
     private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
+
+    //method to build URL depending on preference
+    public static URL buildUrl(String sortUrl, Context context) {
+        String BASE_QUERY;
+        if (sortUrl.equals(context.getString(R.string.pref_pop_value))) {
+            BASE_QUERY = context.getString(R.string.api_popular);
+        } else {
+            BASE_QUERY = context.getString(R.string.api_top_rated);
+        }
+        Uri sortOrderUri = Uri.parse(context.getString(R.string.base_url)).buildUpon()
+                .appendEncodedPath(context.getString(R.string.base_path))
+                .appendEncodedPath(BASE_QUERY)
+                .build();
+        try {
+            URL sortOrderURL = new URL(sortOrderUri.toString());
+            Log.v(LOG_TAG, "URL: " + sortOrderURL);
+            return sortOrderURL;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     //method to connect to internet and return jsonResponse
     public static String makeHttpRequest(URL url) throws IOException {

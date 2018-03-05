@@ -21,6 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -37,19 +39,17 @@ public class MainActivity extends AppCompatActivity
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static ImageAdapter mAdapter;
-    private static String SORT_BY;
-
-    //example URL https://api.themoviedb.org/3/movie/popular?api_key=ccac7cd7a937bc204875001c4924f88a
-    private static final String BASE_URL = "https://api.themoviedb.org";
-    private static final String BASE_PATH = "3/movie";
+    private static String mSortBy;
+    private TextView emptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // get the reference of RecyclerView
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        // get the reference of RecyclerView and EmptyView
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        emptyView = findViewById(R.id.emptyView);
         // set a GridLayoutManager with default vertical orientation and 2 number of columns
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager); // set LayoutManager to RecyclerView
@@ -59,28 +59,20 @@ public class MainActivity extends AppCompatActivity
 
         setupSharedPreferences();
 
-        //TODO: move this method to NetworkUtils
-        //check connectivity
-        //ask Connectivity Manager to check the status of network connectivity
+        //check connectivity and display "No Network Connection" if no connection
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        //get status of default network connection
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        //if there is a network connection, initialise loader
         if (networkInfo != null && networkInfo.isConnected()) {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
             //call the Async method to make connection to given API in background
             MovieAsyncTask task = new MovieAsyncTask();
-            task.execute(buildUrl());
+            task.execute(NetworkUtils.buildUrl(mSortBy, this));
         } else {
-            //otherwise set the EmptyView to display an appropriate message
-            //TODO: polish
-            // mEmptyStateTextView.setText(R.string.no_internet_connection);
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
         }
-
-        //a call to the URL Builder in Network Utils
     }
-
-    //a filter-dependent method returning the appropriate URL based on Spinner
-
     //set up Settings option
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -112,17 +104,17 @@ public class MainActivity extends AppCompatActivity
 
     private void setupSharedPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SORT_BY = sharedPreferences.getString(getString(R.string.sort_by_key),
+        mSortBy = sharedPreferences.getString(getString(R.string.sort_by_key),
                 getString(R.string.pref_pop_value));
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        if (s.equals(getString(R.string.sort_by_key))) {
-            SORT_BY = sharedPreferences.getString(getString(R.string.sort_by_key),
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.sort_by_key))) {
+            mSortBy = sharedPreferences.getString(getString(R.string.sort_by_key),
                     getString(R.string.pref_pop_value));
             MovieAsyncTask task = new MovieAsyncTask();
-            task.execute(buildUrl());
+            task.execute(NetworkUtils.buildUrl(mSortBy, this));
         }
     }
 
@@ -140,30 +132,16 @@ public class MainActivity extends AppCompatActivity
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    //method to build URL depending on preference
-    public URL buildUrl() {
-        String BASE_QUERY;
-        if (SORT_BY.equals(getString(R.string.pref_pop_value))) {
-            BASE_QUERY = getString(R.string.api_popular);
-        } else {
-            BASE_QUERY = getString(R.string.api_top_rated);
-        }
-        Uri sortOrderUri = Uri.parse(BASE_URL).buildUpon()
-                .appendEncodedPath(BASE_PATH)
-                .appendEncodedPath(BASE_QUERY)
-                .build();
-        try {
-            URL sortOrderURL = new URL(sortOrderUri.toString());
-            Log.v(LOG_TAG, "URL: " + sortOrderURL);
-            return sortOrderURL;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+    //TODO: change this to a Loader for greater lifecycle handling
+    //TODO: cache Loader data
+    public class MovieAsyncTask extends AsyncTask<URL, Void, ArrayList<MovieItem>> {
 
-    public static class MovieAsyncTask extends AsyncTask<URL, Void, ArrayList<MovieItem>> {
-        //TODO: polish, override onPreExecute
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressBar progressBar = findViewById(R.id.progress_bar);
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         //build Url and return a List of movies
         @Override
@@ -186,9 +164,13 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(ArrayList<MovieItem> queriedMovieItems) {
             super.onPostExecute(queriedMovieItems);
-            //TODO: hide ProgressBar
-            //TODO: polish, if no results, set EmptyTextView
-            mAdapter.setMovieData(queriedMovieItems);
+            ProgressBar progressBar = findViewById(R.id.progress_bar);
+            progressBar.setVisibility(View.GONE);
+            if (queriedMovieItems == null) {
+                emptyView.setText(R.string.no_results);
+            } else {
+                mAdapter.setMovieData(queriedMovieItems);
+            }
         }
     }
 }
