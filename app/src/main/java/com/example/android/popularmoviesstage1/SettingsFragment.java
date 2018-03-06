@@ -12,6 +12,7 @@ import android.support.v7.preference.PreferenceScreen;
  * Created by izzystannett on 03/03/2018.
  */
 
+//TODO: add functionality to sort by Favourites
 //Settings Fragment that links the preferences xml to the settings activity
 
 public class SettingsFragment extends PreferenceFragmentCompat implements

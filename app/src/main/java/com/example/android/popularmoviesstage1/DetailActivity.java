@@ -13,32 +13,38 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-    Context mContext;
-    private ImageView selectedImage;
-    private TextView selectedTitle;
-    private TextView selectedSynopsis;
-    private TextView selectedRating;
-    private TextView selectedDate;
+public class DetailActivity extends AppCompatActivity {
+    @BindView(R.id.selectedImage)
+    ImageView selectedImage;
+    @BindView(R.id.selectedTitle)
+    TextView selectedTitle;
+    @BindView(R.id.selectedSynopsis)
+    TextView selectedSynopsis;
+    @BindView(R.id.selectedRating)
+    TextView selectedRating;
+    @BindView(R.id.selectedDate)
+    TextView selectedDate;
+
+    private Context mContext;
+
+    //TODO: add a button which adds movie to Favourites database
+    //TODO: add Trailers videos(with Intent to YouTube) and user reviews
+    //TODO: implement sharing functionality to allow users to share YouTube videos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ButterKnife.bind(this);
 
         //set up ActionBar for Up button
         ActionBar actionBar = this.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        //find views in activity_detail.xml
-        selectedImage = findViewById(R.id.selectedImage);
-        selectedTitle = findViewById(R.id.selectedTitle);
-        selectedSynopsis = findViewById(R.id.selectedSynopsis);
-        selectedRating = findViewById(R.id.selectedRating);
-        selectedDate = findViewById(R.id.selectedDate);
 
         //get MovieItem from intent and set to views
         Intent intent = getIntent();

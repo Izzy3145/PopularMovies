@@ -16,6 +16,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by izzystannett on 24/02/2018.
  */
@@ -75,13 +78,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     //define the ViewHolder that implements the click handler interface
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final ImageView image;
-
+        @BindView(R.id.image)
+        ImageView image;
         //create ViewHolder that links the image attribute of rowlayout.xml
         //and set a click listener to it
         private MyViewHolder(View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.image);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

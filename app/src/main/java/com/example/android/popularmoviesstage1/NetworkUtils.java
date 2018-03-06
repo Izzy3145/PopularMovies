@@ -25,6 +25,9 @@ import java.util.List;
  * Created by izzystannett on 25/02/2018.
  */
 
+//TODO: request related videos from /movie/{id}/videos on Background Thread
+//TODO: request related reviews from /movie/{id}/reviews on Background Thread
+
 //this class defines the factory methods to be used in the AsyncTask on the MainActivity
 
 public class NetworkUtils {
