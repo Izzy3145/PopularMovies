@@ -2,6 +2,7 @@ package com.example.android.popularmoviesstage1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Movie;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.popularmoviesstage1.favouritesData.Contract;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -28,7 +30,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private final ImageAdapterClickHandler mClickHandler;
     private Context mContext;
     private ArrayList<MovieItem> mMovieItems;
+    private Cursor mCursor;
 
+    //first constructor to take in an array of movie items
     public ImageAdapter(Context c, ArrayList<MovieItem> movieItems, ImageAdapterClickHandler
             imageAdapterClickHandler) {
         mContext = c;
@@ -36,7 +40,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         mClickHandler = imageAdapterClickHandler;
     }
 
-    //create constructor that takes both an array of movie items and the ImageAdapterClickHandler
+    //second constructor to take in Cursor instead of array list for Favourites table querying
+    public ImageAdapter(Context c, Cursor cursor, ImageAdapterClickHandler
+            imageAdapterClickHandler) {
+        mContext = c;
+        mCursor = cursor;
+        mClickHandler = imageAdapterClickHandler;
+    }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -51,14 +61,26 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         //find the movie item in that position
-        final MovieItem currentMovieItem = mMovieItems.get(position);
-        // bind data to the holder (and therefore items)
-        Picasso.with(mContext).load(currentMovieItem.getmImageUrl()).into(holder.image);
+        //TODO: this might be wrong
+        if (mCursor == null) {
+            final MovieItem currentMovieItem = mMovieItems.get(position);
+            // bind data to the holder (and therefore items)
+            Picasso.with(mContext).load(currentMovieItem.getmImageUrl()).into(holder.image);
+        } else {
+            //return if there is no data in the cursor
+            if (!mCursor.moveToPosition(position)) {
+                return;
+            }
+            String image = mCursor.getString(mCursor.getColumnIndex(Contract.favouritesEntry.COLUMN_MOVIE_IMAGE));
+            Picasso.with(mContext).load(image).into(holder.image);
+        }
     }
 
     @Override
     public int getItemCount() {
-        if (mMovieItems != null) {
+        if (mCursor != null) {
+            return mCursor.getCount();
+        } else if (mMovieItems != null) {
             return mMovieItems.size();
         } else {
             return 0;

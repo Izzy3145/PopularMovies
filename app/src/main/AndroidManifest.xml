@@ -38,6 +38,11 @@
                 android:value=".MainActivity"/>
         </activity>
 
+        <provider
+            android:name="com.example.android.popularmoviesstage1.favouritesData.FavouritesProvider"
+            android:authorities="com.example.android.popularmoviesstage1"
+            android:exported="false" />
+
     </application>
 
 </manifest>

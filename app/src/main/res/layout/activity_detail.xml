@@ -35,6 +35,12 @@
             android:layout_below="@id/selectedDate"
             android:layout_toEndOf="@+id/selectedImage" />
 
+        <Button
+            android:id="@+id/favouritedButton"
+            style="@style/button_style"
+            android:layout_below="@id/selectedRating"
+            android:layout_toEndOf="@+id/selectedImage"
+            android:text="@string/favourites_button" />
         <TextView
             android:id="@+id/selectedSynopsis"
             style="@style/synopsis_style"

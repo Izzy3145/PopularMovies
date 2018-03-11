@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -34,11 +35,15 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import com.example.android.popularmoviesstage1.ImageAdapter.ImageAdapterClickHandler;
+import com.example.android.popularmoviesstage1.favouritesData.Contract;
+import com.example.android.popularmoviesstage1.favouritesData.FavouritesProvider;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 //TODO: implement onSaveInstanceState/onRestoreInstanceState
+//TODO: create new Cursor Loader to load favourites table.
+// TODO: Learn how to move Loaders off main thread
 
 public class MainActivity extends AppCompatActivity
         implements ImageAdapterClickHandler, SharedPreferences.OnSharedPreferenceChangeListener,
@@ -108,11 +113,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        switch (id) {
+            case R.id.action_settings:
             Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
             startActivity(startSettingsActivity);
-            return true;
+                break;
+            case R.id.action_query_favourites:
+                Cursor queriedCursor = getContentResolver().query
+                        (Contract.favouritesEntry.CONTENT_URI, null, null, null,
+                                null);
+                mAdapter = new ImageAdapter(this, queriedCursor, this);
+                recyclerView.setAdapter(mAdapter);
+                break;
+            case R.id.action_all_movies:
+                mAdapter = new ImageAdapter(this, new ArrayList<MovieItem>(), this);
+                recyclerView.setAdapter(mAdapter);
+                getLoaderManager().restartLoader(MOVIE_LOADER, mBundle, this);
+                break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -136,7 +155,9 @@ public class MainActivity extends AppCompatActivity
         if (key.equals(getString(R.string.sort_by_key))) {
             mSortBy = sharedPreferences.getString(getString(R.string.sort_by_key),
                     getString(R.string.pref_pop_value));
-            //restart Loader
+            //update mSortBy
+            mBundle.putString(SORT_BY_KEY, mSortBy);
+            //restart Loader with new Bundle
             getLoaderManager().restartLoader(MOVIE_LOADER, mBundle, this);
         }
     }
@@ -214,44 +235,4 @@ public class MainActivity extends AppCompatActivity
     public void onLoaderReset(Loader<ArrayList<MovieItem>> loader) {
     }
 
-
-    //public class MovieAsyncTask extends AsyncTask<URL, Void, ArrayList<MovieItem>> {
-
-    //  @Override
-    //protected void onPreExecute() {
-    //  super.onPreExecute();
-    //ProgressBar progressBar = findViewById(R.id.progress_bar);
-    //progressBar.setVisibility(View.VISIBLE);
-    //}
-
-    //build Url and return a List of movies
-    //@Override
-    //protected ArrayList<MovieItem> doInBackground(URL... urls) {
-    //   URL url = urls[0];
-    //  String queriedJsonResponse = null;
-
-//            try {
-    //              queriedJsonResponse = NetworkUtils.makeHttpRequest(url);
-    //        } catch (IOException e) {
-    //          e.printStackTrace();
-    //        Log.v(LOG_TAG, "Problem with network connection");
-    //  }
-
-//            ArrayList<MovieItem> queriedMovieItems = NetworkUtils.extractFeatureFromJson(queriedJsonResponse);
-    //          return queriedMovieItems;
-    //    }
-
-    //set the list of movies to the adapter
-    //    @Override
-    //  protected void onPostExecute(ArrayList<MovieItem> queriedMovieItems) {
-    //    super.onPostExecute(queriedMovieItems);
-    //  ProgressBar progressBar = findViewById(R.id.progress_bar);
-    //      progressBar.setVisibility(View.GONE);
-    //    if (queriedMovieItems == null) {
-    //      emptyView.setText(R.string.no_results);
-    //     } else {
-    //       mAdapter.setMovieData(queriedMovieItems);
-    //    }
-    //  }
-    //}
 }
