@@ -74,7 +74,15 @@ public class FavouritesProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+        final SQLiteDatabase db = mFavouritesDbHelper.getWritableDatabase();
+        int moviesDeleted;
+        String id = uri.getPathSegments().get(1);
+        moviesDeleted = db.delete(TABLE_NAME, "_id=?", new String[]{id});
+
+        if (moviesDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return moviesDeleted;
     }
 
     @Override

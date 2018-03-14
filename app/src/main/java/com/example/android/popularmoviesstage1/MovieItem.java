@@ -1,6 +1,7 @@
 package com.example.android.popularmoviesstage1;
 
 import android.graphics.Movie;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -30,6 +31,9 @@ public class MovieItem implements Parcelable {
     private String mPlotSynopsis;
     private int mUserRating;
     private String mReleaseDate;
+    private int mTag;
+    private String mUriString;
+
 
     public MovieItem(String originalTitle, String imageUrl, String plotSynopsis,
                      int userRating, String releaseDate) {
@@ -40,6 +44,16 @@ public class MovieItem implements Parcelable {
         mReleaseDate = releaseDate;
     }
 
+    public MovieItem(String originalTitle, String imageUrl, String plotSynopsis,
+                     int userRating, String releaseDate, Uri uri) {
+        mOriginalTitle = originalTitle;
+        mImageUrl = imageUrl;
+        mPlotSynopsis = plotSynopsis;
+        mUserRating = userRating;
+        mReleaseDate = releaseDate;
+        mUriString = uri.toString();
+    }
+
     //override Parcelable methods
     protected MovieItem(Parcel in) {
         mOriginalTitle = in.readString();
@@ -47,6 +61,8 @@ public class MovieItem implements Parcelable {
         mPlotSynopsis = in.readString();
         mUserRating = in.readInt();
         mReleaseDate = in.readString();
+        mUriString = in.readString();
+        mTag = in.readInt();
     }
 
     //set getter methods
@@ -70,6 +86,18 @@ public class MovieItem implements Parcelable {
         return mReleaseDate;
     }
 
+    public String getmUriString() {
+        return mUriString;
+    }
+
+    public int getTag() {
+        return mTag;
+    }
+
+    public void setTag(final int tag) {
+        mTag = tag;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -82,5 +110,7 @@ public class MovieItem implements Parcelable {
         parcel.writeString(mPlotSynopsis);
         parcel.writeInt(mUserRating);
         parcel.writeString(mReleaseDate);
+        parcel.writeString(mUriString);
+        parcel.writeInt(mTag);
     }
 }

@@ -39,13 +39,13 @@
             android:id="@+id/favouritedButton"
             style="@style/button_style"
             android:layout_below="@id/selectedRating"
-            android:layout_toEndOf="@+id/selectedImage"
-            android:text="@string/favourites_button" />
+            android:layout_toEndOf="@+id/selectedImage" />
+
         <TextView
             android:id="@+id/selectedSynopsis"
             style="@style/synopsis_style"
             android:layout_below="@id/selectedImage" />
 
     </RelativeLayout>
-
+    <!-- TODO: add recycler view for trailers -->
 </ScrollView>

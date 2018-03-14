@@ -4,7 +4,8 @@
     <string name="action_query_favourites">Favourites</string>
     <string name="action_detail">More Info</string>
     <string name="action_all_movies">All Movies</string>
-    <string name="favourites_button">Mark As Favourite</string>
+    <string name="mark_as_favourite">Mark As Favourite</string>
+    <string name="remove_from_favourites">Remove from Favourites</string>
 
     <!--TODO: figure out how to put API key in build.gradle file -->
 

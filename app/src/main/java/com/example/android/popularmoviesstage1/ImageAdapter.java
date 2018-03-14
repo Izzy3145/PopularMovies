@@ -1,10 +1,13 @@
 package com.example.android.popularmoviesstage1;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Movie;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +30,13 @@ import butterknife.ButterKnife;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder> {
 
+    public static final int CURSOR_TAG = 50;
+    public static final int ARRAY_TAG = 55;
+    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String IMAGE_SIZE_URL = "w185";
+    public static int adapterPosition;
     private final ImageAdapterClickHandler mClickHandler;
+    private String LOG_TAG = ImageAdapter.class.getSimpleName();
     private Context mContext;
     private ArrayList<MovieItem> mMovieItems;
     private Cursor mCursor;
@@ -60,18 +69,20 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        //find the movie item in that position
-        //TODO: this might be wrong
+        //if cursor is empty, return movie images from the ArrayList
         if (mCursor == null) {
+            //find the movie item in that position
             final MovieItem currentMovieItem = mMovieItems.get(position);
             // bind data to the holder (and therefore items)
             Picasso.with(mContext).load(currentMovieItem.getmImageUrl()).into(holder.image);
         } else {
+            //if a Cursor is present, return movie images from the favourites db
             //return if there is no data in the cursor
             if (!mCursor.moveToPosition(position)) {
                 return;
             }
-            String image = mCursor.getString(mCursor.getColumnIndex(Contract.favouritesEntry.COLUMN_MOVIE_IMAGE));
+            String image = mCursor.getString(
+                    mCursor.getColumnIndex(Contract.favouritesEntry.COLUMN_MOVIE_IMAGE));
             Picasso.with(mContext).load(image).into(holder.image);
         }
     }
@@ -87,9 +98,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         }
     }
 
-    //method to set data
-    public void setMovieData(ArrayList<MovieItem> movieItems) {
+    //method to set data from array
+    public void setMovieArrayData(ArrayList<MovieItem> movieItems) {
         mMovieItems = movieItems;
+        notifyDataSetChanged();
+    }
+
+    public void setMovieCursorData(Cursor movieItems) {
+        mCursor = movieItems;
         notifyDataSetChanged();
     }
 
@@ -113,8 +129,33 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         //define the onClick method to be assigned to the listener
         @Override
         public void onClick(View view) {
-            int adapterPosition = getAdapterPosition();
-            MovieItem movieItem = mMovieItems.get(adapterPosition);
+            MovieItem movieItem;
+            adapterPosition = getAdapterPosition();
+
+            //if cursor is present, form a movieItem from it
+            if (mCursor != null) {
+                mCursor.moveToPosition(adapterPosition);
+                String originalTitle = mCursor.getString(
+                        mCursor.getColumnIndexOrThrow(Contract.favouritesEntry.COLUMN_MOVIE_TITLE));
+                String imageUrl = mCursor.getString(
+                        mCursor.getColumnIndexOrThrow(Contract.favouritesEntry.COLUMN_MOVIE_IMAGE));
+                String releaseDate = mCursor.getString(
+                        mCursor.getColumnIndexOrThrow(Contract.favouritesEntry.COLUMN_MOVIE_RELEASE_DATE));
+                int userRating = mCursor.getInt(
+                        mCursor.getColumnIndexOrThrow(Contract.favouritesEntry.COLUMN_MOVIE_RATING));
+                String plotSynopsis = mCursor.getString(
+                        mCursor.getColumnIndexOrThrow(Contract.favouritesEntry.COLUMN_MOVIE_SYNOPSIS));
+                Uri uri = ContentUris.withAppendedId(Contract.favouritesEntry.CONTENT_URI, mCursor.getInt(
+                        mCursor.getColumnIndex(Contract.favouritesEntry._ID)));
+                movieItem = new MovieItem(originalTitle, imageUrl, plotSynopsis, userRating, releaseDate, uri);
+                //set appropriate tag to movieItem for use in DetailActivity
+                movieItem.setTag(CURSOR_TAG);
+            } else {
+                //else select the appropriate movie from the array using getAdapterPosition
+                movieItem = mMovieItems.get(adapterPosition);
+                movieItem.setTag(ARRAY_TAG);
+            }
+            //pass movieItem into the recyclerView's onClickMethod
             mClickHandler.onClickMethod(movieItem);
         }
     }

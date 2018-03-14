@@ -42,24 +42,25 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 //TODO: implement onSaveInstanceState/onRestoreInstanceState
-//TODO: create new Cursor Loader to load favourites table.
-// TODO: Learn how to move Loaders off main thread
 
 public class MainActivity extends AppCompatActivity
-        implements ImageAdapterClickHandler, SharedPreferences.OnSharedPreferenceChangeListener,
-        LoaderManager.LoaderCallbacks<ArrayList<MovieItem>> {
+        implements ImageAdapterClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int MOVIE_LOADER = 5;
+    private static final int CURSOR_LOADER = 10;
     private static final String SORT_BY_KEY = "SORT_BY_KEY";
     private static String mSortBy;
+    public ImageAdapter mAdapter;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
     @BindView(R.id.emptyView)
     TextView emptyView;
-    private ImageAdapter mAdapter;
     private Bundle mBundle;
-
+    private Context mContext;
+    private MovieLoader mMovieLoader;
+    private CursorLoader mCursorLoader;
+    private LoaderManager mLoaderManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,28 +81,34 @@ public class MainActivity extends AppCompatActivity
         mBundle = new Bundle();
         mBundle.putString(SORT_BY_KEY, mSortBy);
 
+        mMovieLoader = new MovieLoader(this);
+        mCursorLoader = new CursorLoader(this, mAdapter);
+        mLoaderManager = getLoaderManager();
+
+        checkConnectivityAndInitialiseLoader(mBundle);
+
+    }
+
+    private void checkConnectivityAndInitialiseLoader(Bundle loaderBundle) {
         //check connectivity and display "No Network Connection" if no connection
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             recyclerView.setVisibility(View.VISIBLE);
             emptyView.setVisibility(View.GONE);
-            initialiseLoader(mBundle);
+            //initialise Loader
+            Loader<ArrayList<MovieItem>> movieItemLoader = mLoaderManager.getLoader(MOVIE_LOADER);
+            if (movieItemLoader == null) {
+                mLoaderManager.initLoader(MOVIE_LOADER, loaderBundle, mMovieLoader);
+            } else {
+                mLoaderManager.restartLoader(MOVIE_LOADER, loaderBundle, mMovieLoader);
+            }
         } else {
             recyclerView.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);
         }
     }
 
-    private void initialiseLoader(Bundle loaderBundle) {
-        LoaderManager loaderManager = getLoaderManager();
-        Loader<ArrayList<MovieItem>> movieItemLoader = loaderManager.getLoader(MOVIE_LOADER);
-        if (movieItemLoader == null) {
-            loaderManager.initLoader(MOVIE_LOADER, loaderBundle, this);
-        } else {
-            loaderManager.restartLoader(MOVIE_LOADER, loaderBundle, this);
-        }
-    }
     //set up Settings option
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -114,21 +121,22 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_settings:
-            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
-            startActivity(startSettingsActivity);
-                break;
-            case R.id.action_query_favourites:
-                Cursor queriedCursor = getContentResolver().query
-                        (Contract.favouritesEntry.CONTENT_URI, null, null, null,
-                                null);
-                mAdapter = new ImageAdapter(this, queriedCursor, this);
-                recyclerView.setAdapter(mAdapter);
-                break;
             case R.id.action_all_movies:
                 mAdapter = new ImageAdapter(this, new ArrayList<MovieItem>(), this);
                 recyclerView.setAdapter(mAdapter);
-                getLoaderManager().restartLoader(MOVIE_LOADER, mBundle, this);
+                getLoaderManager().restartLoader(MOVIE_LOADER, mBundle, mMovieLoader);
+                break;
+            case R.id.action_query_favourites:
+                Loader<Cursor> cursorItemLoader = mLoaderManager.getLoader(CURSOR_LOADER);
+                if (cursorItemLoader == null) {
+                    mLoaderManager.initLoader(CURSOR_LOADER, null, mCursorLoader);
+                } else {
+                    mLoaderManager.restartLoader(CURSOR_LOADER, null, mCursorLoader);
+                }
+                break;
+            case R.id.action_settings:
+                Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+                startActivity(startSettingsActivity);
                 break;
         }
 
@@ -158,7 +166,7 @@ public class MainActivity extends AppCompatActivity
             //update mSortBy
             mBundle.putString(SORT_BY_KEY, mSortBy);
             //restart Loader with new Bundle
-            getLoaderManager().restartLoader(MOVIE_LOADER, mBundle, this);
+            getLoaderManager().restartLoader(MOVIE_LOADER, mBundle, mMovieLoader);
         }
     }
 
@@ -166,7 +174,9 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this)
-        .registerOnSharedPreferenceChangeListener(this);
+                .registerOnSharedPreferenceChangeListener(this);
+        //reload the Cursor Loader, in case the cursor has changed.
+        mLoaderManager.restartLoader(CURSOR_LOADER, null, mCursorLoader);
     }
 
     @Override
@@ -176,63 +186,70 @@ public class MainActivity extends AppCompatActivity
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    //implement Loader callbacks
-    @Override
-    public Loader<ArrayList<MovieItem>> onCreateLoader(int i, final Bundle args) {
-        return new AsyncTaskLoader<ArrayList<MovieItem>>(this) {
+    //Loader for acquiring Most Popular or To Rated movies
 
-            ArrayList<MovieItem> mMovieItems;
+    class MovieLoader implements LoaderManager.LoaderCallbacks<ArrayList<MovieItem>> {
+        //implement Loader callbacks
+        public MovieLoader(Context context) {
+            mContext = context;
+        }
 
-            @Override
-            protected void onStartLoading() {
-                super.onStartLoading();
-                if (args == null) {
-                    return;
+        @Override
+        public Loader<ArrayList<MovieItem>> onCreateLoader(int i, final Bundle args) {
+            return new AsyncTaskLoader<ArrayList<MovieItem>>(mContext) {
+
+                ArrayList<MovieItem> mMovieItems;
+
+                @Override
+                protected void onStartLoading() {
+                    super.onStartLoading();
+                    if (args == null) {
+                        return;
+                    }
+                    ProgressBar progressBar = findViewById(R.id.progress_bar);
+                    progressBar.setVisibility(View.VISIBLE);
+                    forceLoad();
                 }
-                ProgressBar progressBar = findViewById(R.id.progress_bar);
-                progressBar.setVisibility(View.VISIBLE);
-                forceLoad();
-            }
 
-            @Override
-            public ArrayList<MovieItem> loadInBackground() {
-                //get mSortBy preference from Bundle
-                String sortByString = args.getString(SORT_BY_KEY);
-                //build Url from mSortBy string
-                URL url = NetworkUtils.buildUrl(sortByString, MainActivity.this);
+                @Override
+                public ArrayList<MovieItem> loadInBackground() {
+                    //get mSortBy preference from Bundle
+                    String sortByString = args.getString(SORT_BY_KEY);
+                    //build Url from mSortBy string
+                    URL url = NetworkUtils.buildUrl(sortByString, MainActivity.this);
 
-                try {
-                    String queriedJsonResponse = NetworkUtils.makeHttpRequest(url);
-                    ArrayList<MovieItem> queriedMovieItems = NetworkUtils.extractFeatureFromJson(queriedJsonResponse);
-                    return queriedMovieItems;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.v(LOG_TAG, "Problem with network connection");
-                    return null;
+                    try {
+                        String queriedJsonResponse = NetworkUtils.makeHttpRequest(url);
+                        ArrayList<MovieItem> queriedMovieItems = NetworkUtils.extractFeatureFromJson(queriedJsonResponse);
+                        return queriedMovieItems;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.v(LOG_TAG, "Problem with network connection");
+                        return null;
+                    }
                 }
-            }
 
-            @Override
-            public void deliverResult(ArrayList<MovieItem> data) {
-                mMovieItems = data;
-                super.deliverResult(data);
-            }
-        };
-    }
+                @Override
+                public void deliverResult(ArrayList<MovieItem> data) {
+                    mMovieItems = data;
+                    super.deliverResult(data);
+                }
+            };
+        }
 
-    @Override
-    public void onLoadFinished(Loader<ArrayList<MovieItem>> loader, ArrayList<MovieItem> queriedMovieItems) {
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.GONE);
-        if (queriedMovieItems == null) {
-            emptyView.setText(R.string.no_results);
-        } else {
-            mAdapter.setMovieData(queriedMovieItems);
+        @Override
+        public void onLoadFinished(Loader<ArrayList<MovieItem>> loader, ArrayList<MovieItem> queriedMovieItems) {
+            ProgressBar progressBar = findViewById(R.id.progress_bar);
+            progressBar.setVisibility(View.GONE);
+            if (queriedMovieItems == null) {
+                emptyView.setText(R.string.no_results);
+            } else {
+                mAdapter.setMovieArrayData(queriedMovieItems);
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<ArrayList<MovieItem>> loader) {
         }
     }
-
-    @Override
-    public void onLoaderReset(Loader<ArrayList<MovieItem>> loader) {
-    }
-
 }
