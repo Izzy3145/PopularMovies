@@ -105,6 +105,7 @@ public class DetailActivity extends AppCompatActivity {
         selectedDate.setText(movieItem.getmReleaseDate());
     }
 
+    //switch button text between "remove from favourites" and "add to favourites" appropriately
     private void setButtonText(int movieTag) {
         switch (movieTag) {
             case ImageAdapter.CURSOR_TAG:

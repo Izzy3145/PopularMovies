@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity
                 getLoaderManager().restartLoader(MOVIE_LOADER, mBundle, mMovieLoader);
                 break;
             case R.id.action_query_favourites:
+                mCursorLoader = new CursorLoader(this, mAdapter);
                 Loader<Cursor> cursorItemLoader = mLoaderManager.getLoader(CURSOR_LOADER);
                 if (cursorItemLoader == null) {
                     mLoaderManager.initLoader(CURSOR_LOADER, null, mCursorLoader);
