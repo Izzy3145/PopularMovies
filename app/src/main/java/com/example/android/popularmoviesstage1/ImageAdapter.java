@@ -2,19 +2,13 @@ package com.example.android.popularmoviesstage1;
 
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Movie;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.android.popularmoviesstage1.favouritesData.Contract;
 import com.squareup.picasso.Picasso;
@@ -34,7 +28,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     public static final int ARRAY_TAG = 55;
     private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
     private static final String IMAGE_SIZE_URL = "w185";
-    public static int adapterPosition;
     private final ImageAdapterClickHandler mClickHandler;
     private String LOG_TAG = ImageAdapter.class.getSimpleName();
     private Context mContext;
@@ -60,7 +53,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // inflate the item Layout
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rowlayout, parent,
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_layout, parent,
                 false);
         //pass the view to the ViewHolder
         MyViewHolder viewHolder = new MyViewHolder(view);
@@ -118,7 +111,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.image)
         ImageView image;
-        //create ViewHolder that links the image attribute of rowlayout.xml
+
+        //create ViewHolder that links the image attribute of grid_layout.xml
         //and set a click listener to it
         private MyViewHolder(View itemView) {
             super(itemView);
@@ -130,7 +124,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         @Override
         public void onClick(View view) {
             MovieItem movieItem;
-            adapterPosition = getAdapterPosition();
+            int adapterPosition = getAdapterPosition();
 
             //if cursor is present, form a movieItem from it
             if (mCursor != null) {

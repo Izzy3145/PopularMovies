@@ -4,8 +4,11 @@
     <string name="action_query_favourites">Favourites</string>
     <string name="action_detail">More Info</string>
     <string name="action_all_movies">All Movies</string>
+
     <string name="mark_as_favourite">Mark As Favourite</string>
     <string name="remove_from_favourites">Remove from Favourites</string>
+
+    <string name="trailer">Trailer </string>
 
     <!--TODO: figure out how to put API key in build.gradle file -->
 
@@ -13,6 +16,8 @@
     <string name="base_path" translatable="false">3/movie</string>
     <string name="api_popular" translatable="false">popular?api_key=ccac7cd7a937bc204875001c4924f88a</string>
     <string name="api_top_rated" translatable="false">top_rated?api_key=ccac7cd7a937bc204875001c4924f88a</string>
+    <string name="api_videos" translatable="false">videos?api_key=ccac7cd7a937bc204875001c4924f88a</string>
+    <string name="api_reviews" translatable="false">reviews?api_key=ccac7cd7a937bc204875001c4924f88a</string>
 
     <string name="no_internet_connection">No internet connection</string>
     <string name="no_results">Oops, no results this time!</string>

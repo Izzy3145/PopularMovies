@@ -7,15 +7,11 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,20 +19,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
 import com.example.android.popularmoviesstage1.ImageAdapter.ImageAdapterClickHandler;
-import com.example.android.popularmoviesstage1.favouritesData.Contract;
-import com.example.android.popularmoviesstage1.favouritesData.FavouritesProvider;
+import com.example.android.popularmoviesstage1.settings.SettingsActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -86,7 +77,6 @@ public class MainActivity extends AppCompatActivity
         mLoaderManager = getLoaderManager();
 
         checkConnectivityAndInitialiseLoader(mBundle);
-
     }
 
     private void checkConnectivityAndInitialiseLoader(Bundle loaderBundle) {
@@ -140,7 +130,6 @@ public class MainActivity extends AppCompatActivity
                 startActivity(startSettingsActivity);
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -188,7 +177,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Loader for acquiring Most Popular or To Rated movies
-
     class MovieLoader implements LoaderManager.LoaderCallbacks<ArrayList<MovieItem>> {
         //implement Loader callbacks
         public MovieLoader(Context context) {
@@ -217,11 +205,11 @@ public class MainActivity extends AppCompatActivity
                     //get mSortBy preference from Bundle
                     String sortByString = args.getString(SORT_BY_KEY);
                     //build Url from mSortBy string
-                    URL url = NetworkUtils.buildUrl(sortByString, MainActivity.this);
+                    URL url = NetworkUtils.buildUrlForMovieDetails(sortByString, MainActivity.this);
 
                     try {
                         String queriedJsonResponse = NetworkUtils.makeHttpRequest(url);
-                        ArrayList<MovieItem> queriedMovieItems = NetworkUtils.extractFeatureFromJson(queriedJsonResponse);
+                        ArrayList<MovieItem> queriedMovieItems = NetworkUtils.extractMovieDetailsFromJson(queriedJsonResponse);
                         return queriedMovieItems;
                     } catch (IOException e) {
                         e.printStackTrace();
