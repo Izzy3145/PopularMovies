@@ -24,7 +24,6 @@ public class Contract {
         public static final String COLUMN_MOVIE_RELEASE_DATE = "releaseDate";
         public static final String COLUMN_MOVIE_RATING = "userRating";
         public static final String COLUMN_MOVIE_SYNOPSIS = "plotSynopsis";
-
-
+        public static final String COLUMN_MOVIE_ID_FROM_JSON = "idFromJson";
     }
 }

@@ -26,11 +26,10 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<ArrayList<Rev
     private int mId;
     private ReviewAdapter mReviewAdapter;
 
-    //TODO: add Id into constructor
     //public constructor
-    public ReviewLoader(Context context, ReviewAdapter reviewAdapter) {
+    public ReviewLoader(Context context, ReviewAdapter reviewAdapter, int id) {
         this.mContext = context;
-        //mId = id;
+        mId = id;
         mReviewAdapter = reviewAdapter;
     }
 
@@ -49,7 +48,7 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<ArrayList<Rev
             @Override
             public ArrayList<ReviewItem> loadInBackground() {
                 //build Url to fetch Trailer Details
-                URL url = NetworkUtils.buildUrlForReviews(mContext);
+                URL url = NetworkUtils.buildUrlForReviews(mContext, mId);
 
                 try {
                     String queriedJsonResponse = NetworkUtils.makeHttpRequest(url);

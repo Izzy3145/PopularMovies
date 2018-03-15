@@ -13,7 +13,7 @@ import com.example.android.popularmoviesstage1.favouritesData.Contract.favourite
 public class FavouritesDbHelper extends SQLiteOpenHelper {
     //create database name and version
     private static final String DATABASE_NAME = "favourites.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     //create constructor
     public FavouritesDbHelper(Context context) {
@@ -29,6 +29,7 @@ public class FavouritesDbHelper extends SQLiteOpenHelper {
                 favouritesEntry.COLUMN_MOVIE_IMAGE + " TEXT NOT NULL, " +
                 favouritesEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL, " +
                 favouritesEntry.COLUMN_MOVIE_RATING + " INTEGER NOT NULL, " +
+                favouritesEntry.COLUMN_MOVIE_ID_FROM_JSON + " INTEGER NOT NULL, " +
                 favouritesEntry.COLUMN_MOVIE_SYNOPSIS + " TEXT NOT NULL" + ");";
 
         sqLiteDatabase.execSQL(SQL_CREATE_FAVOURITES_TABLE);

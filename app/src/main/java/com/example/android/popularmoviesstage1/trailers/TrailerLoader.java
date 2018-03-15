@@ -26,11 +26,10 @@ public class TrailerLoader implements LoaderManager.LoaderCallbacks<ArrayList<St
     private int mId;
     private TrailerAdapter mTrailerAdapter;
 
-    //TODO: add Id into constructor
     //public constructor
-    public TrailerLoader(Context context, TrailerAdapter trailerAdapter) {
+    public TrailerLoader(Context context, TrailerAdapter trailerAdapter, int id) {
         this.mContext = context;
-        //mId = id;
+        mId = id;
         mTrailerAdapter = trailerAdapter;
     }
 
@@ -49,7 +48,7 @@ public class TrailerLoader implements LoaderManager.LoaderCallbacks<ArrayList<St
             @Override
             public ArrayList<String> loadInBackground() {
                 //build Url to fetch Trailer Details
-                URL url = NetworkUtils.buildUrlForTrailers(mContext);
+                URL url = NetworkUtils.buildUrlForTrailers(mContext, mId);
 
                 try {
                     String queriedJsonResponse = NetworkUtils.makeHttpRequest(url);

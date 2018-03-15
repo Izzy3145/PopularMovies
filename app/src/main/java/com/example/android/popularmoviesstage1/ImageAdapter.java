@@ -139,9 +139,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                         mCursor.getColumnIndexOrThrow(Contract.favouritesEntry.COLUMN_MOVIE_RATING));
                 String plotSynopsis = mCursor.getString(
                         mCursor.getColumnIndexOrThrow(Contract.favouritesEntry.COLUMN_MOVIE_SYNOPSIS));
+                int id = mCursor.getInt(
+                        mCursor.getColumnIndexOrThrow(Contract.favouritesEntry.COLUMN_MOVIE_ID_FROM_JSON));
                 Uri uri = ContentUris.withAppendedId(Contract.favouritesEntry.CONTENT_URI, mCursor.getInt(
                         mCursor.getColumnIndex(Contract.favouritesEntry._ID)));
-                movieItem = new MovieItem(originalTitle, imageUrl, plotSynopsis, userRating, releaseDate, uri);
+                movieItem = new MovieItem(originalTitle, imageUrl, plotSynopsis, userRating, releaseDate,
+                        id, uri);
                 //set appropriate tag to movieItem for use in DetailActivity
                 movieItem.setTag(CURSOR_TAG);
             } else {

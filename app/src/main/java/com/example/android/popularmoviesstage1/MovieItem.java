@@ -33,24 +33,27 @@ public class MovieItem implements Parcelable {
     private String mReleaseDate;
     private int mTag;
     private String mUriString;
+    private int mID;
 
 
     public MovieItem(String originalTitle, String imageUrl, String plotSynopsis,
-                     int userRating, String releaseDate) {
+                     int userRating, String releaseDate, int id) {
         mOriginalTitle = originalTitle;
         mImageUrl = imageUrl;
         mPlotSynopsis = plotSynopsis;
         mUserRating = userRating;
         mReleaseDate = releaseDate;
+        mID = id;
     }
 
     public MovieItem(String originalTitle, String imageUrl, String plotSynopsis,
-                     int userRating, String releaseDate, Uri uri) {
+                     int userRating, String releaseDate, int id, Uri uri) {
         mOriginalTitle = originalTitle;
         mImageUrl = imageUrl;
         mPlotSynopsis = plotSynopsis;
         mUserRating = userRating;
         mReleaseDate = releaseDate;
+        mID = id;
         mUriString = uri.toString();
     }
 
@@ -63,6 +66,7 @@ public class MovieItem implements Parcelable {
         mReleaseDate = in.readString();
         mUriString = in.readString();
         mTag = in.readInt();
+        mID = in.readInt();
     }
 
     //set getter methods
@@ -98,6 +102,10 @@ public class MovieItem implements Parcelable {
         mTag = tag;
     }
 
+    public int getID() {
+        return mID;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -112,5 +120,6 @@ public class MovieItem implements Parcelable {
         parcel.writeString(mReleaseDate);
         parcel.writeString(mUriString);
         parcel.writeInt(mTag);
+        parcel.writeInt(mID);
     }
 }

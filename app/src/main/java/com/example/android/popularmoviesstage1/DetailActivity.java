@@ -59,15 +59,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     TextView reviewEmptyView;
     private MovieItem mParcelledMovieItem;
     private int mMovieTag;
+    private int mMovieID;
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
     private LoaderManager mLoaderManager;
     private TrailerLoader mTrailerLoader;
     private ReviewLoader mReviewLoader;
 
-
-    //TODO: https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=ccac7cd7a937bc204875001c4924f88a
-    //TODO: implement sharing functionality to allow users to share YouTube videos
+    //TODO: implement sharing functionality to allow users to share YouTube videos?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +89,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mMovieTag = mParcelledMovieItem.getTag();
         setButtonText(mMovieTag);
 
+        //get movie ID
+        mMovieID = mParcelledMovieItem.getID();
+
         //set button functionality depending on the button tag
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,6 +112,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                         cv.put(Contract.favouritesEntry.COLUMN_MOVIE_RATING, mParcelledMovieItem.getmUserRating());
                         cv.put(Contract.favouritesEntry.COLUMN_MOVIE_RELEASE_DATE, mParcelledMovieItem.getmReleaseDate());
                         cv.put(Contract.favouritesEntry.COLUMN_MOVIE_SYNOPSIS, mParcelledMovieItem.getmPlotSynopsis());
+                        cv.put(Contract.favouritesEntry.COLUMN_MOVIE_ID_FROM_JSON, mParcelledMovieItem.getID());
 
                         //add movieItem to the database via the content resolver
                         getContentResolver().insert(Contract.favouritesEntry.CONTENT_URI, cv);
@@ -129,12 +132,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         //set up trailer recycler view, adapter and loader
         mTrailerAdapter = new TrailerAdapter(this, new ArrayList<String>(), this);
         trailerRecyclerView.setAdapter(mTrailerAdapter);
-        mTrailerLoader = new TrailerLoader(this, mTrailerAdapter);
+        mTrailerLoader = new TrailerLoader(this, mTrailerAdapter, mMovieID);
 
         //set up review recycler view, adapter and loader
         mReviewAdapter = new ReviewAdapter(this, new ArrayList<ReviewItem>());
         reviewRecyclerView.setAdapter(mReviewAdapter);
-        mReviewLoader = new ReviewLoader(this, mReviewAdapter);
+        mReviewLoader = new ReviewLoader(this, mReviewAdapter, mMovieID);
 
         //get loader manager
         mLoaderManager = getLoaderManager();

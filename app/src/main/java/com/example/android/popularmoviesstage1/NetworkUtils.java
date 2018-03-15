@@ -28,9 +28,6 @@ import java.util.List;
  * Created by izzystannett on 25/02/2018.
  */
 
-//TODO: request related videos from /movie/{id}/videos on Background Thread
-//TODO: request related reviews from /movie/{id}/reviews on Background Thread
-
 //this class defines the factory methods to be used in the AsyncTask on the MainActivity
 
 public class NetworkUtils {
@@ -60,13 +57,12 @@ public class NetworkUtils {
     }
 
     //method to build URL for acquiring trailers
-    public static URL buildUrlForTrailers(Context context) {
+    public static URL buildUrlForTrailers(Context context, int id) {
         Uri trailerUri = Uri.parse(context.getString(R.string.base_url)).buildUpon()
                 .appendEncodedPath(context.getString(R.string.base_path))
-                .appendEncodedPath("343611")
+                .appendEncodedPath(Integer.toString(id))
                 .appendEncodedPath(context.getString(R.string.api_videos))
                 .build();
-        //TODO:add in id variable
         try {
             URL trailerURL = new URL(trailerUri.toString());
             Log.v(LOG_TAG, "URL: " + trailerURL);
@@ -78,13 +74,12 @@ public class NetworkUtils {
     }
 
     //method to build URL for acquiring trailers
-    public static URL buildUrlForReviews(Context context) {
+    public static URL buildUrlForReviews(Context context, int id) {
         Uri reviewUri = Uri.parse(context.getString(R.string.base_url)).buildUpon()
                 .appendEncodedPath(context.getString(R.string.base_path))
-                .appendEncodedPath("343611")
+                .appendEncodedPath(Integer.toString(id))
                 .appendEncodedPath(context.getString(R.string.api_reviews))
                 .build();
-        //TODO:add in id variable
         try {
             URL reviewURL = new URL(reviewUri.toString());
             Log.v(LOG_TAG, "URL: " + reviewURL);
@@ -241,6 +236,7 @@ public class NetworkUtils {
             String plotSynopsis;
             int userRating;
             String releaseDate;
+            int id;
 
             // If there are results in the features array
             for (int i = 0; i < itemsArray.length(); i++) {
@@ -277,9 +273,15 @@ public class NetworkUtils {
                     releaseDate = null;
                 }
 
+                if (movieObject.has("id")) {
+                    id = movieObject.getInt("id");
+                } else {
+                    id = 0;
+                }
+
                 //create new BookItem object and add to the Array List
                 MovieItem foundMovie = new MovieItem(originalTitle, imageUrl, plotSynopsis,
-                        userRating, releaseDate);
+                        userRating, releaseDate, id);
                 movieItems.add(foundMovie);
             }
             return movieItems;
