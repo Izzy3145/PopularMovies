@@ -7,14 +7,12 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.example.android.popularmoviesstage1.favouritesData.Contract;
+import com.example.android.popularmoviesstage1.movies.ImageAdapter;
 
 import butterknife.BindView;
-
-import static android.view.View.GONE;
 
 /**
  * Created by izzystannett on 14/03/2018.
@@ -23,8 +21,6 @@ import static android.view.View.GONE;
 public class CursorLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = CursorLoader.class.getSimpleName();
-    @BindView(R.id.emptyView)
-    TextView emptyView;
     private Context mContext;
     private ImageAdapter mAdapter;
 

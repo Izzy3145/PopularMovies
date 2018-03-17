@@ -1,27 +1,30 @@
 package com.example.android.popularmoviesstage1;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.app.LoaderManager;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.popularmoviesstage1.favouritesData.Contract;
+import com.example.android.popularmoviesstage1.movies.ImageAdapter;
+import com.example.android.popularmoviesstage1.movies.MovieItem;
 import com.example.android.popularmoviesstage1.reviews.ReviewAdapter;
 import com.example.android.popularmoviesstage1.reviews.ReviewItem;
 import com.example.android.popularmoviesstage1.reviews.ReviewLoader;
@@ -65,8 +68,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private LoaderManager mLoaderManager;
     private TrailerLoader mTrailerLoader;
     private ReviewLoader mReviewLoader;
-
-    //TODO: implement sharing functionality to allow users to share YouTube videos?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +117,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
                         //add movieItem to the database via the content resolver
                         getContentResolver().insert(Contract.favouritesEntry.CONTENT_URI, cv);
+                        Toast.makeText(DetailActivity.this, R.string.added_to_favourites, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -132,12 +134,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         //set up trailer recycler view, adapter and loader
         mTrailerAdapter = new TrailerAdapter(this, new ArrayList<String>(), this);
         trailerRecyclerView.setAdapter(mTrailerAdapter);
-        mTrailerLoader = new TrailerLoader(this, mTrailerAdapter, mMovieID);
+        mTrailerLoader = new TrailerLoader(this, mTrailerAdapter, trailerEmptyView, mMovieID);
 
         //set up review recycler view, adapter and loader
         mReviewAdapter = new ReviewAdapter(this, new ArrayList<ReviewItem>());
         reviewRecyclerView.setAdapter(mReviewAdapter);
-        mReviewLoader = new ReviewLoader(this, mReviewAdapter, mMovieID);
+        mReviewLoader = new ReviewLoader(this, mReviewAdapter, reviewEmptyView, mMovieID);
 
         //get loader manager
         mLoaderManager = getLoaderManager();
@@ -150,12 +152,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            //set up trailer views
-            trailerRecyclerView.setVisibility(View.VISIBLE);
-            trailerEmptyView.setVisibility(View.GONE);
-            //set up reviews views
-            reviewRecyclerView.setVisibility(View.VISIBLE);
-            reviewEmptyView.setVisibility(View.GONE);
             //initialise Loaders
             Loader<ArrayList<String>> trailerLoader = mLoaderManager.getLoader(TRAILER_LOADER);
             Loader<ArrayList<ReviewItem>> reviewLoader = mLoaderManager.getLoader(REVIEW_LOADER);
@@ -173,10 +169,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             }
         } else {
             //if no connection, make empty views visible
-            trailerRecyclerView.setVisibility(View.GONE);
-            trailerEmptyView.setVisibility(View.VISIBLE);
-            reviewRecyclerView.setVisibility(View.GONE);
+            reviewEmptyView.setText(R.string.no_internet_connection);
             reviewEmptyView.setVisibility(View.VISIBLE);
+
+            trailerEmptyView.setText(R.string.no_internet_connection);
+            trailerEmptyView.setVisibility(View.VISIBLE);
         }
     }
 

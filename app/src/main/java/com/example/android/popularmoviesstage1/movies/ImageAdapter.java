@@ -1,4 +1,4 @@
-package com.example.android.popularmoviesstage1;
+package com.example.android.popularmoviesstage1.movies;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.popularmoviesstage1.R;
 import com.example.android.popularmoviesstage1.favouritesData.Contract;
 import com.squareup.picasso.Picasso;
 

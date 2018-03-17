@@ -9,9 +9,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,17 +22,18 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.popularmoviesstage1.movies.ImageAdapter;
+import com.example.android.popularmoviesstage1.movies.ImageAdapter.ImageAdapterClickHandler;
+import com.example.android.popularmoviesstage1.movies.MovieItem;
+import com.example.android.popularmoviesstage1.movies.MovieNetworkUtils;
+import com.example.android.popularmoviesstage1.settings.SettingsActivity;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import com.example.android.popularmoviesstage1.ImageAdapter.ImageAdapterClickHandler;
-import com.example.android.popularmoviesstage1.settings.SettingsActivity;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-//TODO: implement onSaveInstanceState/onRestoreInstanceState
 
 public class MainActivity extends AppCompatActivity
         implements ImageAdapterClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -41,8 +42,10 @@ public class MainActivity extends AppCompatActivity
     private static final int MOVIE_LOADER = 5;
     private static final int CURSOR_LOADER = 10;
     private static final String SORT_BY_KEY = "SORT_BY_KEY";
+    private static final String SAVED_MOVIEITEMS_KEY = "SAVED_MOVIEITEMS_KEY";
     private static String mSortBy;
     public ImageAdapter mAdapter;
+    public ImageAdapter mCursorAdapter;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
     @BindView(R.id.emptyView)
@@ -52,6 +55,9 @@ public class MainActivity extends AppCompatActivity
     private MovieLoader mMovieLoader;
     private CursorLoader mCursorLoader;
     private LoaderManager mLoaderManager;
+    private ArrayList<MovieItem> mQueriedMovieItems;
+    private boolean isFavouritesScreen = false;
+    private Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +65,23 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        // recovering the instance state
+        if (savedInstanceState != null) {
+            mQueriedMovieItems = savedInstanceState.getParcelableArrayList(SAVED_MOVIEITEMS_KEY);
+            mAdapter.setMovieArrayData(mQueriedMovieItems);
+        }
+
         // set a GridLayoutManager with default vertical orientation and 2 number of columns
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager); // set LayoutManager to RecyclerView
         //  call the constructor of ImageAdapter to send the reference and data to Adapter
         mAdapter = new ImageAdapter(this, new ArrayList<MovieItem>(), this);
-        recyclerView.setAdapter(mAdapter);
+        mCursorAdapter = new ImageAdapter(this, mCursor, this);
+        if (isFavouritesScreen) {
+            recyclerView.setAdapter(mCursorAdapter);
+        } else {
+            recyclerView.setAdapter(mAdapter);
+        }
 
         setupSharedPreferences();
 
@@ -112,12 +129,16 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id) {
             case R.id.action_all_movies:
+                isFavouritesScreen = false;
                 mAdapter = new ImageAdapter(this, new ArrayList<MovieItem>(), this);
                 recyclerView.setAdapter(mAdapter);
                 getLoaderManager().restartLoader(MOVIE_LOADER, mBundle, mMovieLoader);
                 break;
             case R.id.action_query_favourites:
-                mCursorLoader = new CursorLoader(this, mAdapter);
+                isFavouritesScreen = true;
+                mCursorAdapter = new ImageAdapter(this, mCursor, this);
+                recyclerView.setAdapter(mCursorAdapter);
+                mCursorLoader = new CursorLoader(this, mCursorAdapter);
                 Loader<Cursor> cursorItemLoader = mLoaderManager.getLoader(CURSOR_LOADER);
                 if (cursorItemLoader == null) {
                     mLoaderManager.initLoader(CURSOR_LOADER, null, mCursorLoader);
@@ -161,12 +182,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(SAVED_MOVIEITEMS_KEY, mQueriedMovieItems);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        mAdapter.setMovieArrayData(mQueriedMovieItems);
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this);
         //reload the Cursor Loader, in case the cursor has changed.
-        mLoaderManager.restartLoader(CURSOR_LOADER, null, mCursorLoader);
     }
 
     @Override
@@ -195,9 +227,14 @@ public class MainActivity extends AppCompatActivity
                     if (args == null) {
                         return;
                     }
-                    ProgressBar progressBar = findViewById(R.id.progress_bar);
-                    progressBar.setVisibility(View.VISIBLE);
-                    forceLoad();
+
+                    if (mMovieItems != null) {
+                        deliverResult(mMovieItems);
+                    } else {
+                        ProgressBar progressBar = findViewById(R.id.progress_bar);
+                        progressBar.setVisibility(View.VISIBLE);
+                        forceLoad();
+                    }
                 }
 
                 @Override
@@ -205,11 +242,11 @@ public class MainActivity extends AppCompatActivity
                     //get mSortBy preference from Bundle
                     String sortByString = args.getString(SORT_BY_KEY);
                     //build Url from mSortBy string
-                    URL url = NetworkUtils.buildUrlForMovieDetails(sortByString, MainActivity.this);
+                    URL url = MovieNetworkUtils.buildUrlForMovieDetails(sortByString, MainActivity.this);
 
                     try {
-                        String queriedJsonResponse = NetworkUtils.makeHttpRequest(url);
-                        ArrayList<MovieItem> queriedMovieItems = NetworkUtils.extractMovieDetailsFromJson(queriedJsonResponse);
+                        String queriedJsonResponse = MovieNetworkUtils.makeHttpRequest(url);
+                        ArrayList<MovieItem> queriedMovieItems = MovieNetworkUtils.extractMovieDetailsFromJson(queriedJsonResponse);
                         return queriedMovieItems;
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -228,12 +265,13 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onLoadFinished(Loader<ArrayList<MovieItem>> loader, ArrayList<MovieItem> queriedMovieItems) {
+            mQueriedMovieItems = queriedMovieItems;
             ProgressBar progressBar = findViewById(R.id.progress_bar);
             progressBar.setVisibility(View.GONE);
-            if (queriedMovieItems == null) {
+            if (mQueriedMovieItems == null) {
                 emptyView.setText(R.string.no_results);
             } else {
-                mAdapter.setMovieArrayData(queriedMovieItems);
+                mAdapter.setMovieArrayData(mQueriedMovieItems);
             }
         }
 

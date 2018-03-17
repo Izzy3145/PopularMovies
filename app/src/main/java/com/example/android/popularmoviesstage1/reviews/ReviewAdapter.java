@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.android.popularmoviesstage1.R;
-import com.example.android.popularmoviesstage1.trailers.TrailerAdapter;
 
 import java.util.ArrayList;
 

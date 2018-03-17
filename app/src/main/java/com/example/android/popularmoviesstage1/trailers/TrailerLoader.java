@@ -6,10 +6,10 @@ import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
-import com.example.android.popularmoviesstage1.DetailActivity;
-import com.example.android.popularmoviesstage1.NetworkUtils;
-import com.example.android.popularmoviesstage1.trailers.TrailerAdapter;
+import com.example.android.popularmoviesstage1.movies.MovieNetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,12 +25,15 @@ public class TrailerLoader implements LoaderManager.LoaderCallbacks<ArrayList<St
     private Context mContext;
     private int mId;
     private TrailerAdapter mTrailerAdapter;
+    private TextView mEmptyTextView;
 
     //public constructor
-    public TrailerLoader(Context context, TrailerAdapter trailerAdapter, int id) {
+    public TrailerLoader(Context context, TrailerAdapter trailerAdapter, TextView emptyTextView,
+                         int id) {
         this.mContext = context;
-        mId = id;
         mTrailerAdapter = trailerAdapter;
+        mEmptyTextView = emptyTextView;
+        mId = id;
     }
 
     @Override
@@ -42,17 +45,21 @@ public class TrailerLoader implements LoaderManager.LoaderCallbacks<ArrayList<St
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                forceLoad();
+                if (mTrailers != null) {
+                    deliverResult(mTrailers);
+                } else {
+                    forceLoad();
+                }
             }
 
             @Override
             public ArrayList<String> loadInBackground() {
                 //build Url to fetch Trailer Details
-                URL url = NetworkUtils.buildUrlForTrailers(mContext, mId);
+                URL url = TrailerNetworkUtils.buildUrlForTrailers(mContext, mId);
 
                 try {
-                    String queriedJsonResponse = NetworkUtils.makeHttpRequest(url);
-                    ArrayList<String> queriedTrailers = NetworkUtils.extractTrailerIdsFromJson
+                    String queriedJsonResponse = MovieNetworkUtils.makeHttpRequest(url);
+                    ArrayList<String> queriedTrailers = TrailerNetworkUtils.extractTrailerIdsFromJson
                             (queriedJsonResponse);
                     return queriedTrailers;
                 } catch (IOException e) {
@@ -72,7 +79,12 @@ public class TrailerLoader implements LoaderManager.LoaderCallbacks<ArrayList<St
 
     @Override
     public void onLoadFinished(Loader<ArrayList<String>> loader, ArrayList<String> trailerStrings) {
-        mTrailerAdapter.setTrailerData(trailerStrings);
+        if (trailerStrings.size() == 0) {
+            mEmptyTextView.setVisibility(View.VISIBLE);
+        } else {
+            mTrailerAdapter.setTrailerData(trailerStrings);
+            mEmptyTextView.setVisibility(View.GONE);
+        }
     }
 
     @Override

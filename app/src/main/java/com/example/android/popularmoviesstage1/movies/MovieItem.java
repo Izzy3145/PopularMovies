@@ -1,11 +1,8 @@
-package com.example.android.popularmoviesstage1;
+package com.example.android.popularmoviesstage1.movies;
 
-import android.graphics.Movie;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.net.URL;
 
 /**
  * Created by izzystannett on 25/02/2018.

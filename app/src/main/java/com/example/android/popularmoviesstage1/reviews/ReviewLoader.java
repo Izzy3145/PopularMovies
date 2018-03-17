@@ -6,10 +6,11 @@ import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
-import com.example.android.popularmoviesstage1.DetailActivity;
-import com.example.android.popularmoviesstage1.NetworkUtils;
-import com.example.android.popularmoviesstage1.trailers.TrailerAdapter;
+import com.example.android.popularmoviesstage1.R;
+import com.example.android.popularmoviesstage1.movies.MovieNetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,14 +24,17 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<ArrayList<Rev
 
     private String LOG_TAG = ReviewLoader.class.getSimpleName();
     private Context mContext;
-    private int mId;
     private ReviewAdapter mReviewAdapter;
+    private TextView mEmptyTextView;
+    private int mId;
 
     //public constructor
-    public ReviewLoader(Context context, ReviewAdapter reviewAdapter, int id) {
+    public ReviewLoader(Context context, ReviewAdapter reviewAdapter, TextView emptyTextView,
+                        int id) {
         this.mContext = context;
-        mId = id;
         mReviewAdapter = reviewAdapter;
+        mEmptyTextView = emptyTextView;
+        mId = id;
     }
 
     @Override
@@ -42,17 +46,21 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<ArrayList<Rev
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                forceLoad();
+                if (mReviews != null) {
+                    deliverResult(mReviews);
+                } else {
+                    forceLoad();
+                }
             }
 
             @Override
             public ArrayList<ReviewItem> loadInBackground() {
                 //build Url to fetch Trailer Details
-                URL url = NetworkUtils.buildUrlForReviews(mContext, mId);
+                URL url = ReviewNetworkUtils.buildUrlForReviews(mContext, mId);
 
                 try {
-                    String queriedJsonResponse = NetworkUtils.makeHttpRequest(url);
-                    ArrayList<ReviewItem> queriedReviews = NetworkUtils.extractReviewsFromJson
+                    String queriedJsonResponse = MovieNetworkUtils.makeHttpRequest(url);
+                    ArrayList<ReviewItem> queriedReviews = ReviewNetworkUtils.extractReviewsFromJson
                             (queriedJsonResponse);
                     return queriedReviews;
                 } catch (IOException e) {
@@ -72,7 +80,12 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<ArrayList<Rev
 
     @Override
     public void onLoadFinished(Loader<ArrayList<ReviewItem>> loader, ArrayList<ReviewItem> reviews) {
-        mReviewAdapter.setReviewData(reviews);
+        if (reviews.size() == 0) {
+            mEmptyTextView.setVisibility(View.VISIBLE);
+        } else {
+            mEmptyTextView.setVisibility(View.GONE);
+            mReviewAdapter.setReviewData(reviews);
+        }
     }
 
     @Override

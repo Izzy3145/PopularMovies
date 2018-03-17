@@ -18,9 +18,16 @@
         <item name="android:layout_width">wrap_content</item>
     </style>
 
+    <style name="average_rating_style" parent="synopsis_style">
+        <item name="android:textSize">@dimen/rating</item>
+        <item name="android:layout_marginBottom">@dimen/activity_horizontal_margin</item>
+    </style>
+
     <style name="rating_style" parent="synopsis_style">
         <item name="android:textSize">@dimen/rating</item>
         <item name="android:layout_marginBottom">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
+
     </style>
 
     <style name="release_date_style" parent="synopsis_style">
@@ -37,6 +44,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_marginBottom">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingStart">@dimen/activity_vertical_margin</item>
 
     </style>
 
@@ -51,8 +59,11 @@
         <item name="android:layout_marginTop">@dimen/activity_horizontal_margin</item>
         <item name="android:layout_marginLeft">@dimen/detail_text_left_margin</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">@dimen/button_width</item>
         <item name="android:fontFamily">sans-serif-smallcaps</item>
+        <item name="android:background">@color/accent</item>
+        <item name="android:textSize">@dimen/synopsis</item>
+        <item name="android:padding">@dimen/synopsis</item>
 
     </style>
 

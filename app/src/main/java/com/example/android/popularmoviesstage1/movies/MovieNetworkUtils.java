@@ -1,12 +1,10 @@
-package com.example.android.popularmoviesstage1;
+package com.example.android.popularmoviesstage1.movies;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.android.popularmoviesstage1.reviews.ReviewItem;
+import com.example.android.popularmoviesstage1.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,13 +14,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by izzystannett on 25/02/2018.
@@ -30,9 +26,9 @@ import java.util.List;
 
 //this class defines the factory methods to be used in the AsyncTask on the MainActivity
 
-public class NetworkUtils {
+public class MovieNetworkUtils {
 
-    private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
+    private static final String LOG_TAG = MovieNetworkUtils.class.getSimpleName();
 
     //method to build URL for sorting order,; either sort by popularity or top rated
     public static URL buildUrlForMovieDetails(String sortUrl, Context context) {
@@ -50,40 +46,6 @@ public class NetworkUtils {
             URL sortOrderURL = new URL(sortOrderUri.toString());
             Log.v(LOG_TAG, "URL: " + sortOrderURL);
             return sortOrderURL;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    //method to build URL for acquiring trailers
-    public static URL buildUrlForTrailers(Context context, int id) {
-        Uri trailerUri = Uri.parse(context.getString(R.string.base_url)).buildUpon()
-                .appendEncodedPath(context.getString(R.string.base_path))
-                .appendEncodedPath(Integer.toString(id))
-                .appendEncodedPath(context.getString(R.string.api_videos))
-                .build();
-        try {
-            URL trailerURL = new URL(trailerUri.toString());
-            Log.v(LOG_TAG, "URL: " + trailerURL);
-            return trailerURL;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    //method to build URL for acquiring trailers
-    public static URL buildUrlForReviews(Context context, int id) {
-        Uri reviewUri = Uri.parse(context.getString(R.string.base_url)).buildUpon()
-                .appendEncodedPath(context.getString(R.string.base_path))
-                .appendEncodedPath(Integer.toString(id))
-                .appendEncodedPath(context.getString(R.string.api_reviews))
-                .build();
-        try {
-            URL reviewURL = new URL(reviewUri.toString());
-            Log.v(LOG_TAG, "URL: " + reviewURL);
-            return reviewURL;
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
@@ -148,81 +110,6 @@ public class NetworkUtils {
         return output.toString();
     }
 
-    //JSON parsing method for extracting an Array of strings (trailer ids)
-    public static ArrayList<String> extractTrailerIdsFromJson(String jsonResponse) {
-        ArrayList<String> trailerIDs = new ArrayList<>();
-        //if the jsonString is empty, return early
-        if (TextUtils.isEmpty(jsonResponse)) {
-            return null;
-        }
-        //extract key from each trailer object
-        try {
-            JSONObject baseJsonResponse = new JSONObject(jsonResponse);
-            JSONArray itemsArray = baseJsonResponse.getJSONArray("results");
-
-            String key;
-
-            // If there are results in the features array
-            for (int i = 0; i < itemsArray.length(); i++) {
-                //Extract book items from the JSON response (parse the JSON)
-                JSONObject trailerObject = itemsArray.getJSONObject(i);
-
-                if (trailerObject.has("key")) {
-                    key = trailerObject.getString("key");
-                } else {
-                    key = null;
-                }
-                trailerIDs.add(key);
-            }
-            return trailerIDs;
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Problem parsing trailer JSON results", e);
-        }
-        return null;
-    }
-
-    //JSON parsing method for extracting an Array of strings (trailer ids)
-    public static ArrayList<ReviewItem> extractReviewsFromJson(String jsonResponse) {
-        ArrayList<ReviewItem> reviewItems = new ArrayList<>();
-        //if the jsonString is empty, return early
-        if (TextUtils.isEmpty(jsonResponse)) {
-            return null;
-        }
-        //extract key from each trailer object
-        try {
-            JSONObject baseJsonResponse = new JSONObject(jsonResponse);
-            JSONArray itemsArray = baseJsonResponse.getJSONArray("results");
-
-            String author;
-            String content;
-
-            // If there are results in the features array
-            for (int i = 0; i < itemsArray.length(); i++) {
-                //Extract book items from the JSON response (parse the JSON)
-                JSONObject reviewObject = itemsArray.getJSONObject(i);
-
-                if (reviewObject.has("author")) {
-                    author = reviewObject.getString("author");
-                } else {
-                    author = null;
-                }
-
-                if (reviewObject.has("content")) {
-                    content = reviewObject.getString("content");
-                } else {
-                    content = null;
-                }
-
-                ReviewItem foundReview = new ReviewItem(author, content);
-                reviewItems.add(foundReview);
-            }
-            return reviewItems;
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Problem parsing review JSON results", e);
-        }
-        return null;
-    }
-
     //JSON parsing method for extracting an Array of MovieItems
     public static ArrayList<MovieItem> extractMovieDetailsFromJson(String jsonResponse) {
         ArrayList<MovieItem> movieItems = new ArrayList<>();
@@ -268,7 +155,7 @@ public class NetworkUtils {
                 }
 
                 if (movieObject.has("release_date")) {
-                    releaseDate = movieObject.getString("release_date");
+                    releaseDate = (movieObject.getString("release_date")).substring(0, 4);
                 } else {
                     releaseDate = null;
                 }
