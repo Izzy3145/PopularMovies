@@ -29,6 +29,8 @@ import java.util.ArrayList;
 public class MovieNetworkUtils {
 
     private static final String LOG_TAG = MovieNetworkUtils.class.getSimpleName();
+    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String IMAGE_SIZE_URL = "w185";
 
     //method to build URL for sorting order,; either sort by popularity or top rated
     public static URL buildUrlForMovieDetails(String sortUrl, Context context) {
@@ -137,10 +139,12 @@ public class MovieNetworkUtils {
                 }
 
                 if (movieObject.has("poster_path")) {
-                    imageUrl = movieObject.getString("poster_path");
+                    String urlPath = movieObject.getString("poster_path");
+                    imageUrl = BASE_IMAGE_URL + IMAGE_SIZE_URL + urlPath;
                 } else {
                     imageUrl = null;
                 }
+                Log.e(LOG_TAG, "Image Url retrieved from JSON = " + imageUrl);
 
                 if (movieObject.has("overview")) {
                     plotSynopsis = movieObject.getString("overview");

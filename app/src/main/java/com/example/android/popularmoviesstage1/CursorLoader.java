@@ -7,12 +7,10 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.example.android.popularmoviesstage1.favouritesData.Contract;
 import com.example.android.popularmoviesstage1.movies.ImageAdapter;
 
-import butterknife.BindView;
 
 /**
  * Created by izzystannett on 14/03/2018.

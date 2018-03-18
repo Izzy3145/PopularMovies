@@ -21,8 +21,7 @@ public class MovieItem implements Parcelable {
             return new MovieItem[i];
         }
     };
-    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
-    private static final String IMAGE_SIZE_URL = "w185";
+
     private String mOriginalTitle;
     private String mImageUrl;
     private String mPlotSynopsis;
@@ -31,7 +30,6 @@ public class MovieItem implements Parcelable {
     private int mTag;
     private String mUriString;
     private int mID;
-
 
     public MovieItem(String originalTitle, String imageUrl, String plotSynopsis,
                      int userRating, String releaseDate, int id) {
@@ -72,7 +70,7 @@ public class MovieItem implements Parcelable {
     }
 
     public String getmImageUrl() {
-        return BASE_IMAGE_URL + IMAGE_SIZE_URL + mImageUrl;
+        return mImageUrl;
     }
 
     public String getmPlotSynopsis() {

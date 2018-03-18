@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +28,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     public static final int CURSOR_TAG = 50;
     public static final int ARRAY_TAG = 55;
-    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
-    private static final String IMAGE_SIZE_URL = "w185";
     private final ImageAdapterClickHandler mClickHandler;
-    private String LOG_TAG = ImageAdapter.class.getSimpleName();
     private Context mContext;
     private ArrayList<MovieItem> mMovieItems;
     private Cursor mCursor;

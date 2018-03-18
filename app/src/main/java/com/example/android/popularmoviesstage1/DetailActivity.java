@@ -14,7 +14,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -191,7 +190,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .into(selectedImage);
         selectedTitle.setText(movieItem.getmOriginalTitle());
         selectedSynopsis.setText(movieItem.getmPlotSynopsis());
-        selectedRating.setText(Integer.toString(movieItem.getmUserRating()) + "/10");
+        String rating = Integer.toString(movieItem.getmUserRating()) + "/10";
+        selectedRating.setText(rating);
         selectedDate.setText(movieItem.getmReleaseDate());
     }
 

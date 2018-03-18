@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity
     private MovieLoader mMovieLoader;
     private CursorLoader mCursorLoader;
     private LoaderManager mLoaderManager;
-    private ArrayList<MovieItem> mQueriedMovieItems;
     private boolean isFavouritesScreen = false;
     private Cursor mCursor;
 
@@ -64,12 +63,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        // recovering the instance state
-        if (savedInstanceState != null) {
-            mQueriedMovieItems = savedInstanceState.getParcelableArrayList(SAVED_MOVIEITEMS_KEY);
-            mAdapter.setMovieArrayData(mQueriedMovieItems);
-        }
 
         // set a GridLayoutManager with default vertical orientation and 2 number of columns
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
@@ -182,23 +175,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(SAVED_MOVIEITEMS_KEY, mQueriedMovieItems);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        mAdapter.setMovieArrayData(mQueriedMovieItems);
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this);
-        //reload the Cursor Loader, in case the cursor has changed.
+        if (isFavouritesScreen) {
+            recyclerView.setAdapter(mCursorAdapter);
+        } else {
+            recyclerView.setAdapter(mAdapter);
+        }
     }
 
     @Override
@@ -265,13 +250,12 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onLoadFinished(Loader<ArrayList<MovieItem>> loader, ArrayList<MovieItem> queriedMovieItems) {
-            mQueriedMovieItems = queriedMovieItems;
             ProgressBar progressBar = findViewById(R.id.progress_bar);
             progressBar.setVisibility(View.GONE);
-            if (mQueriedMovieItems == null) {
+            if (queriedMovieItems == null) {
                 emptyView.setText(R.string.no_results);
             } else {
-                mAdapter.setMovieArrayData(mQueriedMovieItems);
+                mAdapter.setMovieArrayData(queriedMovieItems);
             }
         }
 
