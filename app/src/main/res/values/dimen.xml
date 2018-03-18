@@ -15,11 +15,7 @@
     <dimen name="synopsis">16sp</dimen>
     <dimen name="rating">14sp</dimen>
 
-    <dimen name="button_corner_radius">10dp</dimen>
     <dimen name="button_text_padding">1dp</dimen>
     <dimen name="button_width">120dp</dimen>
-
-    <dimen name="review_height">120dp</dimen>
-
 
 </resources>

@@ -9,17 +9,18 @@
     <string name="remove_from_favourites">Remove from Favourites</string>
     <string name="added_to_favourites">Added to Favourites</string>
 
-    <string name="trailer">Trailer </string>
     <string name="trailers">Trailers</string>
     <string name="reviews">Reviews</string>
     <string name="average_rating">Avg rating: </string>
+    <string name="thumbnail">Image thumbnail</string>
+    <string name="play">Play</string>
 
     <string name="base_url" translatable="false">https://api.themoviedb.org</string>
     <string name="base_path" translatable="false">3/movie</string>
-    <string name="api_popular" translatable="false">popular?api_key=YOUR_API_KEY_HERE</string>
-    <string name="api_top_rated" translatable="false">top_rated?api_key=YOUR_API_KEY_HERE</string>
-    <string name="api_videos" translatable="false">videos?api_key=YOUR_API_KEY_HERE</string>
-    <string name="api_reviews" translatable="false">reviews?api_key=YOUR_API_KEY_HERE</string>
+    <string name="api_popular" translatable="false">popular?api_key=ccac7cd7a937bc204875001c4924f88a</string>
+    <string name="api_top_rated" translatable="false">top_rated?api_key=ccac7cd7a937bc204875001c4924f88a</string>
+    <string name="api_videos" translatable="false">videos?api_key=ccac7cd7a937bc204875001c4924f88a</string>
+    <string name="api_reviews" translatable="false">reviews?api_key=ccac7cd7a937bc204875001c4924f88a</string>
 
     <string name="no_internet_connection">No internet connection</string>
     <string name="no_results">Oops, no results this time!</string>

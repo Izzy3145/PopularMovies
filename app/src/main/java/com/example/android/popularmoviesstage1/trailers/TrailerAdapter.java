@@ -45,7 +45,6 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.MyViewHo
     @Override
     public void onBindViewHolder(TrailerAdapter.MyViewHolder holder, int position) {
         //set the item view to the trailer label, i.e. "Trailer 1"
-        //TODO: remove this hardcoded string
         String trailerNumber = Integer.toString(position + 1);
         String trailerLabelText = "Trailer " + trailerNumber;
         holder.trailerLabel.setText(trailerLabelText);

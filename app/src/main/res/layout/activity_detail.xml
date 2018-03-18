@@ -26,7 +26,8 @@
             <ImageView
                 android:id="@+id/selectedImage"
                 style="@style/detail_image_style"
-                android:layout_below="@+id/selectedTitle" />
+                android:layout_below="@+id/selectedTitle"
+                android:contentDescription="@string/thumbnail"/>
 
             <TextView
                 android:id="@+id/selectedDate"
@@ -70,7 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
-            android:text="Trailers"
+            android:text="@string/trailers"
             android:textSize="@dimen/release_date" />
 
         <android.support.v7.widget.RecyclerView
@@ -97,7 +98,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
-            android:text="Reviews"
+            android:text="@string/reviews"
             android:textSize="@dimen/release_date" />
 
         <TextView
