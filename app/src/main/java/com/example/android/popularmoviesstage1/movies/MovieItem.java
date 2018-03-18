@@ -1,10 +1,8 @@
-package com.example.android.popularmoviesstage1;
+package com.example.android.popularmoviesstage1.movies;
 
-import android.graphics.Movie;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.net.URL;
 
 /**
  * Created by izzystannett on 25/02/2018.
@@ -23,21 +21,35 @@ public class MovieItem implements Parcelable {
             return new MovieItem[i];
         }
     };
-    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
-    private static final String IMAGE_SIZE_URL = "w185";
+
     private String mOriginalTitle;
     private String mImageUrl;
     private String mPlotSynopsis;
     private int mUserRating;
     private String mReleaseDate;
+    private int mTag;
+    private String mUriString;
+    private int mID;
 
     public MovieItem(String originalTitle, String imageUrl, String plotSynopsis,
-                     int userRating, String releaseDate) {
+                     int userRating, String releaseDate, int id) {
         mOriginalTitle = originalTitle;
         mImageUrl = imageUrl;
         mPlotSynopsis = plotSynopsis;
         mUserRating = userRating;
         mReleaseDate = releaseDate;
+        mID = id;
+    }
+
+    public MovieItem(String originalTitle, String imageUrl, String plotSynopsis,
+                     int userRating, String releaseDate, int id, Uri uri) {
+        mOriginalTitle = originalTitle;
+        mImageUrl = imageUrl;
+        mPlotSynopsis = plotSynopsis;
+        mUserRating = userRating;
+        mReleaseDate = releaseDate;
+        mID = id;
+        mUriString = uri.toString();
     }
 
     //override Parcelable methods
@@ -47,6 +59,9 @@ public class MovieItem implements Parcelable {
         mPlotSynopsis = in.readString();
         mUserRating = in.readInt();
         mReleaseDate = in.readString();
+        mUriString = in.readString();
+        mTag = in.readInt();
+        mID = in.readInt();
     }
 
     //set getter methods
@@ -55,7 +70,7 @@ public class MovieItem implements Parcelable {
     }
 
     public String getmImageUrl() {
-        return BASE_IMAGE_URL + IMAGE_SIZE_URL + mImageUrl;
+        return mImageUrl;
     }
 
     public String getmPlotSynopsis() {
@@ -70,6 +85,22 @@ public class MovieItem implements Parcelable {
         return mReleaseDate;
     }
 
+    public String getmUriString() {
+        return mUriString;
+    }
+
+    public int getTag() {
+        return mTag;
+    }
+
+    public void setTag(final int tag) {
+        mTag = tag;
+    }
+
+    public int getID() {
+        return mID;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -82,5 +113,8 @@ public class MovieItem implements Parcelable {
         parcel.writeString(mPlotSynopsis);
         parcel.writeInt(mUserRating);
         parcel.writeString(mReleaseDate);
+        parcel.writeString(mUriString);
+        parcel.writeInt(mTag);
+        parcel.writeInt(mID);
     }
 }

@@ -1,10 +1,10 @@
-package com.example.android.popularmoviesstage1;
+package com.example.android.popularmoviesstage1.movies;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.text.TextUtils;
 import android.util.Log;
+
+import com.example.android.popularmoviesstage1.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by izzystannett on 25/02/2018.
@@ -27,12 +26,14 @@ import java.util.List;
 
 //this class defines the factory methods to be used in the AsyncTask on the MainActivity
 
-public class NetworkUtils {
+public class MovieNetworkUtils {
 
-    private static final String LOG_TAG = NetworkUtils.class.getSimpleName();
+    private static final String LOG_TAG = MovieNetworkUtils.class.getSimpleName();
+    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String IMAGE_SIZE_URL = "w185";
 
-    //method to build URL depending on preference
-    public static URL buildUrl(String sortUrl, Context context) {
+    //method to build URL for sorting order,; either sort by popularity or top rated
+    public static URL buildUrlForMovieDetails(String sortUrl, Context context) {
         String BASE_QUERY;
         if (sortUrl.equals(context.getString(R.string.pref_pop_value))) {
             BASE_QUERY = context.getString(R.string.api_popular);
@@ -57,12 +58,10 @@ public class NetworkUtils {
     public static String makeHttpRequest(URL url) throws IOException {
         //the output string starts as an empty string, ready to be 'built'
         String jsonResponse = "";
-
         //if the string is null, then return early
         if (url == null) {
             return jsonResponse;
         }
-
         //initialise objects
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
@@ -79,7 +78,8 @@ public class NetworkUtils {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
-                Log.e(LOG_TAG, "Problem with connection. Error response code: " + urlConnection.getResponseCode());
+                Log.e(LOG_TAG, "Problem with connection. Error response code: " +
+                        urlConnection.getResponseCode());
             }
         } catch (IOException e) {
             Log.e(LOG_TAG, "Problem retrieving the movie JSON results.", e);
@@ -112,13 +112,10 @@ public class NetworkUtils {
         return output.toString();
     }
 
-    //JSON parsing method for extracting a MovieItem
-    public static ArrayList<MovieItem> extractFeatureFromJson(String jsonResponse) {
+    //JSON parsing method for extracting an Array of MovieItems
+    public static ArrayList<MovieItem> extractMovieDetailsFromJson(String jsonResponse) {
         ArrayList<MovieItem> movieItems = new ArrayList<>();
-        //if the jsonString is empty, return early
-        if (TextUtils.isEmpty(jsonResponse)) {
-            return null;
-        }
+
         try {
             JSONObject baseJsonResponse = new JSONObject(jsonResponse);
             JSONArray itemsArray = baseJsonResponse.getJSONArray("results");
@@ -128,6 +125,7 @@ public class NetworkUtils {
             String plotSynopsis;
             int userRating;
             String releaseDate;
+            int id;
 
             // If there are results in the features array
             for (int i = 0; i < itemsArray.length(); i++) {
@@ -141,10 +139,12 @@ public class NetworkUtils {
                 }
 
                 if (movieObject.has("poster_path")) {
-                    imageUrl = movieObject.getString("poster_path");
+                    String urlPath = movieObject.getString("poster_path");
+                    imageUrl = BASE_IMAGE_URL + IMAGE_SIZE_URL + urlPath;
                 } else {
                     imageUrl = null;
                 }
+                Log.e(LOG_TAG, "Image Url retrieved from JSON = " + imageUrl);
 
                 if (movieObject.has("overview")) {
                     plotSynopsis = movieObject.getString("overview");
@@ -159,19 +159,25 @@ public class NetworkUtils {
                 }
 
                 if (movieObject.has("release_date")) {
-                    releaseDate = movieObject.getString("release_date");
+                    releaseDate = (movieObject.getString("release_date")).substring(0, 4);
                 } else {
                     releaseDate = null;
                 }
 
+                if (movieObject.has("id")) {
+                    id = movieObject.getInt("id");
+                } else {
+                    id = 0;
+                }
+
                 //create new BookItem object and add to the Array List
                 MovieItem foundMovie = new MovieItem(originalTitle, imageUrl, plotSynopsis,
-                        userRating, releaseDate);
+                        userRating, releaseDate, id);
                 movieItems.add(foundMovie);
             }
             return movieItems;
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Problem parsing JSON results", e);
+            Log.e(LOG_TAG, "Problem parsing movie item JSON results", e);
         }
         return null;
     }
