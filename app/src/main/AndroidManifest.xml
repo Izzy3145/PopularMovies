@@ -30,13 +30,19 @@
             android:value=".MainActivity"/>
         </activity>
 
-        <activity android:name=".SettingsActivity"
+        <activity
+            android:name=".settings.SettingsActivity"
             android:label="@string/action_settings"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
+
+        <provider
+            android:name="com.example.android.popularmoviesstage1.favouritesData.FavouritesProvider"
+            android:authorities="com.example.android.popularmoviesstage1"
+            android:exported="false" />
 
     </application>
 
