@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     private static final int MOVIE_LOADER = 5;
     private static final int CURSOR_LOADER = 10;
     private static final String SORT_BY_KEY = "SORT_BY_KEY";
-    private static final String SAVED_MOVIEITEMS_KEY = "SAVED_MOVIEITEMS_KEY";
+    private static final String IS_FAVOURITE_KEY = "IS_FAVOURITE_KEY";
     private static String mSortBy;
     public ImageAdapter mAdapter;
     public ImageAdapter mCursorAdapter;
@@ -175,14 +175,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(IS_FAVOURITE_KEY, isFavouritesScreen);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            isFavouritesScreen = savedInstanceState.getBoolean(IS_FAVOURITE_KEY);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this);
         if (isFavouritesScreen) {
-            recyclerView.setAdapter(mCursorAdapter);
+            mLoaderManager.initLoader(CURSOR_LOADER, null, mCursorLoader);
         } else {
-            recyclerView.setAdapter(mAdapter);
+            mLoaderManager.initLoader(MOVIE_LOADER, mBundle, mMovieLoader);
         }
     }
 

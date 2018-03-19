@@ -144,7 +144,6 @@ public class MovieNetworkUtils {
                 } else {
                     imageUrl = null;
                 }
-                Log.e(LOG_TAG, "Image Url retrieved from JSON = " + imageUrl);
 
                 if (movieObject.has("overview")) {
                     plotSynopsis = movieObject.getString("overview");
