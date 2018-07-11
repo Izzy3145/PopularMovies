@@ -12,7 +12,8 @@
     <style name="synopsis_style">
         <item name="android:textSize">@dimen/synopsis</item>
         <item name="android:layout_marginTop">@dimen/activity_horizontal_margin</item>
-        <item name="android:layout_marginLeft">@dimen/detail_text_left_margin</item>
+        <item name="android:layout_marginStart">@dimen/detail_text_left_margin</item>
+        <item name="android:layout_marginEnd">@dimen/detail_text_left_margin</item>
         <item name="android:textColor">@color/secondary_text</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>

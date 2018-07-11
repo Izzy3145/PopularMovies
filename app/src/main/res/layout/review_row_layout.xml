@@ -3,15 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!--
-    trailer items for Trailer RecyclerView
--->
+    <!-- trailer items for Trailer RecyclerView -->
     <TextView
         android:id="@+id/review_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
         android:layout_marginTop="4dp"
         android:textSize="@dimen/synopsis"
         android:textStyle="bold" />
@@ -22,7 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/review_author"
         android:layout_marginBottom="4dp"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
         android:layout_marginTop="4dp"
         android:textSize="@dimen/rating" />
 
