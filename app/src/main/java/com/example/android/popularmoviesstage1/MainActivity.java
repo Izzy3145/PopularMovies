@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity
     private LoaderManager mLoaderManager;
     private boolean isFavouritesScreen = false;
     private Cursor mCursor;
+    CountingIdlingResource mIdlingRes = new CountingIdlingResource("Main IR");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +150,10 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public CountingIdlingResource getIdlingResourceInTest() {
+        return mIdlingRes;
+    }
+
     //override the RecyclerView's onClickMethod, and define intent to open Detail Activity
     @Override
     public void onClickMethod(MovieItem movieItem) {
@@ -223,6 +230,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 protected void onStartLoading() {
                     super.onStartLoading();
+                    mIdlingRes.increment();
                     if (args == null) {
                         return;
                     }
@@ -258,6 +266,7 @@ public class MainActivity extends AppCompatActivity
                 public void deliverResult(ArrayList<MovieItem> data) {
                     mMovieItems = data;
                     super.deliverResult(data);
+                    mIdlingRes.decrement();
                 }
             };
         }
